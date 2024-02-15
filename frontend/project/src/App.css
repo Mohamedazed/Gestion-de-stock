@@ -1,0 +1,125 @@
+
+#body {
+  margin: 0;
+  padding: 0;
+  background: url('/public/bgstock.jpg') no-repeat center center fixed;
+  background-size: cover;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-popup {
+  display: flex;
+  max-width: 1000px; 
+  width: 90%; 
+  max-height: 1000px;
+  height: 80%; 
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.login-form {
+  flex: 1;
+  padding: 40px; 
+  background-color: white;
+}
+
+.login-image {
+  flex: 1;
+  overflow: hidden;
+  background: #f0f0f0; 
+
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.img-fluid {
+  width: 100%;
+  height: auto;
+}
+
+.login-form {
+  flex: 1;
+  padding: 40px;
+  background-color: white;
+}
+
+.login-form input {
+  width: 100%; 
+  padding: 8px; 
+  margin-top: 3px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc; 
+  border-radius: 40px;
+}
+
+.login-form button {
+  width: 100%; 
+  padding: 12px; 
+  margin-top: 5%;
+  font-size: 16px; 
+  border: 1px solid #ccc; 
+  border-radius: 40px;
+  background-color: rgb(218, 137, 24);
+}
+
+/* Main Content styles */
+.main-content {
+  margin-left: 250px;
+  margin-top: 0px;
+  padding: 20px;
+  transition: margin-left 0.5s;
+}
+
+/* style dashboard */
+
+.dashboard-container {
+  display: flex;
+  /* max-width: 100%; */
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 30px; 
+  box-sizing: border-box;
+}
+/* //////////////////////////// */
+
+.menu-link.active {
+
+  color: #212529;
+  font-weight: bold;
+}
+
+#app{
+  background-color: #f7f3ea;
+}
+
+/* Navbar.css */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%; 
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); 
+  z-index: 1;
+}
+/* title  */
+h1{
+  margin-bottom: 5px;
+}
