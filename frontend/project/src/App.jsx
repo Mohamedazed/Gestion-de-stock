@@ -19,6 +19,8 @@ import CreateProd from './components/products/createProd';
 import CreateSupp from './components/suppliers/CreateSupp';
 import EditSupp from './components/suppliers/EditSupp';
 import ShowSupp from './components/suppliers/ShowSupp';
+import ShowProd from './components/products/ShowProd';
+import EditProd from './components/products/EditProd';
 
 function App() {
   return (
@@ -42,6 +44,8 @@ function App() {
                 <Route path="/show/:id" element={<Show />} />
                 <Route path="/edit/:id" element={<Edit />} />
                 <Route path='/products/create' element={<CreateProd/>}/>
+                <Route path='/products/edit/:id' element={<EditProd/>}/>
+                <Route path='/products/show/:id' element={<ShowProd/>} />
                 <Route path='/suppliers/create' element={<CreateSupp/>}/>
                 <Route path="/suppliers/edit/:id" element={<EditSupp />} />
                 <Route path="/suppliers/show/:id" element={<ShowSupp/>} />

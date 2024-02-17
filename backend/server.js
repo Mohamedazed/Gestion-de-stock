@@ -9,12 +9,15 @@ const salt = 10;
 
 const app = express();
 app.use(express.json());
+
 app.use(cors({
-    origin: ["http://localhost:5173"],
+    origin: "http://localhost:5173",
     methods: ["POST", "GET"],
     credentials: true
 }));
 app.use(cookieParser());
+
+app.options('*', cors());
 
 const db = mysql.createConnection({
     host: 'localhost',
@@ -144,7 +147,7 @@ app.delete('/delete/:id' , (req, res) => {
 });
 ///////////////products
 // Get all products
-app.get('/products', (req, res) => {
+app.get('/products',verifyUser, (req, res) => {
     const sql = "SELECT * FROM products";
     db.query(sql, (err, result) => {
         if(err) return res.json({ Message: "Error inside server" });
@@ -154,24 +157,33 @@ app.get('/products', (req, res) => {
 
 // Create a new product
 app.post('/products/create', verifyUser, (req, res) => {
-    const sql = "INSERT INTO products (`name`, `category`, `price`, `quantity`, `supplier`, `created_date`) VALUES (?)";
-    const values = [
-        req.body.name,
-        req.body.category,
-        req.body.price,
-        req.body.quantity,
-        req.body.supplier,
-        req.body.created_date
-    ];
-    db.query(sql, [values], (err, result) => {
-        if(err) return res.json({ err });
-        return res.json({ result });
+    const { name, category, price, quantity, supplier, created_date, Product_Image } = req.body;
+
+    // First, fetch the supplier's code based on the supplier's name
+    const getSupplierCodeSql = "SELECT Code_Supplier FROM suppliers WHERE Name = ?";
+    db.query(getSupplierCodeSql, [supplier], (err, supplierResult) => {
+        if (err) return res.json({ Error: "Error fetching supplier code" });
+        const supplierCode = supplierResult[0].Code_Supplier;
+
+        // Next, insert the new product into the database
+        const insertProductSql = "INSERT INTO products (`name`, `categorie`, `prix`, `quantite`, `Code_Supplier`, `Date_Ajout`, `Product_Image`) VALUES (?)";
+        const values = [name, category, price, quantity, supplierCode, created_date,Product_Image];
+        db.query(insertProductSql, values, (err, result) => {
+            if (err) return res.json({ Error: "Error creating product" });
+            return res.json({ Status: 'Success' });
+        });
     });
 });
 
+
 // Get a specific product by ID
-app.get('/products/:id', verifyUser, (req, res) => {
-    const sql = "SELECT * FROM products WHERE id = ?";
+app.get('/products/show/:id', verifyUser, (req, res) => {
+    const sql = `
+        SELECT p.*, s.Name as supplierName 
+        FROM products p
+        JOIN suppliers s ON p.Code_Supplier = s.Code_Supplier
+        WHERE p.Code_Product = ?
+    `;
     const id = req.params.id;
     db.query(sql, [id], (err, result) => {
         if(err) return res.json({ Message: "Error inside server" });
@@ -179,28 +191,36 @@ app.get('/products/:id', verifyUser, (req, res) => {
     });
 });
 
-// Update a product
+// Route to edit a product
 app.put('/products/edit/:id', verifyUser, (req, res) => {
-    const sql = "UPDATE products SET `name`=?, `category`=?, `price`=?, `quantity`=?, `supplier`=?, `created_date`=? WHERE id = ?";
-    const id = req.params.id;
-    const values = [
-        req.body.name,
-        req.body.category,
-        req.body.price,
-        req.body.quantity,
-        req.body.supplier,
-        req.body.created_date,
-        id
-    ];
-    db.query(sql, values, (err, result) => {
-        if(err) return res.json({ Message: "Error inside server" });
-        return res.json({ result });
+    const productId = req.params.id;
+    const { name, category, price, quantity, supplier } = req.body;
+
+    // First, fetch the supplier's code based on the supplier's name
+    const getSupplierCodeSql = "SELECT Code_Supplier FROM suppliers WHERE Name = ?";
+    db.query(getSupplierCodeSql, [supplier], (err, supplierResult) => {
+        if (err) return res.json({ Error: "Error fetching supplier code" });
+        const supplierCode = supplierResult[0].Code_Supplier;
+
+        // Next, update the product record with the new details
+        const updateProductSql = `
+            UPDATE products 
+            SET name=?, categorie=?, prix=?, quantite=?, Code_Supplier=?
+            WHERE Code_Product=?
+        `;
+        const values = [name, category, price, quantity, supplierCode, productId];
+        db.query(updateProductSql, values, (err, result) => {
+            if (err) return res.json({ Error: "Error updating product" });
+            return res.json({ Status: 'Success' });
+        });
     });
 });
 
+
+
 // Delete a product
 app.delete('/products/delete/:id', verifyUser, (req, res) => {
-    const sql = "DELETE FROM products WHERE id = ?";
+    const sql = "DELETE FROM products WHERE Code_Product = ?";
     const id = req.params.id;
     db.query(sql, [id], (err, result) => {
         if(err) return res.json({ Message: "Error inside server" });
@@ -269,7 +289,7 @@ app.delete('/suppliers/delete/:id', verifyUser, (req, res) => {
 });
 
 // Export the Express app
-// export default app;
+export default app;
 
 
 //////////////

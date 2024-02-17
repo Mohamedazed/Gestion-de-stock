@@ -7,7 +7,7 @@ export default function ShowSupp() {
   const [supplier, setSupplier] = useState([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:8081/suppliers/show/${id}`)
+    axios.get(`http://localhost:8081/suppliers/${id}`)
       .then(res => {
         setSupplier(res.data.result || []);
       })
@@ -45,13 +45,7 @@ export default function ShowSupp() {
                         <Link to={`/suppliers/edit/${s.Code_Supplier}`} className='btn btn-primary '>Edit</Link></li>
                         </ul>)) ):null
             }
-          {/* <p><strong>Name:</strong> {supplier.Name}</p>
-          <p><strong>Phone:</strong> {supplier.Phone}</p>
-          <p><strong>Email:</strong> {supplier.Email}</p>
-          <p><strong>Address:</strong> {supplier.Adresse}</p>
-          <p><strong>Company:</strong> {supplier.Company}</p>
-          <Link to={`/suppliers/edit/${id}`} className="btn btn-primary mr-2">Edit</Link>
-          <Link to="/suppliers" className="btn btn-secondary">Back to Suppliers</Link> */}
+
         </div>
       ) : (
         <p>Loading supplier details...</p>
