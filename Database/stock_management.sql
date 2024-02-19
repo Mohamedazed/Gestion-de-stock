@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : jeu. 15 fév. 2024 à 12:31
+-- Généré le : sam. 17 fév. 2024 à 16:51
 -- Version du serveur : 10.4.28-MariaDB
 -- Version de PHP : 8.2.4
 
@@ -38,7 +38,7 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `created_date`) VALUES
-(1, 'infosCategorie', '2024-01-17'),
+(1, 'infos Cat', '2024-01-15'),
 (3, 'new cat', '2024-01-18'),
 (8, 'testing cat', '2024-02-01'),
 (9, 'doc category', '2024-02-13');
@@ -93,8 +93,17 @@ CREATE TABLE `products` (
   `Quantite` int(11) NOT NULL,
   `Date_Ajout` date NOT NULL,
   `Code_Supplier` int(11) DEFAULT NULL,
-  `Product_Image` varchar(255) DEFAULT NULL
+  `Product_Image` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `products`
+--
+
+INSERT INTO `products` (`Code_Product`, `Categorie`, `Prix`, `Quantite`, `Date_Ajout`, `Code_Supplier`, `Product_Image`, `name`) VALUES
+(0, 'doc category', 11.00, 12, '2024-02-16', 1, 'https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', 'prd 22'),
+(1, 'infos Cat', 33.00, 99, '2024-02-15', 2, 'https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg', 'prd11');
 
 -- --------------------------------------------------------
 
@@ -118,7 +127,8 @@ CREATE TABLE `suppliers` (
 INSERT INTO `suppliers` (`Code_Supplier`, `Name`, `Phone`, `Email`, `Adresse`, `Company`) VALUES
 (1, 'nokia', '0000000', 'nokia@n.c', 'nnnnnnnnn', 'nokia phones'),
 (2, 'apple', '022222222', 'apple@n.c', 'wdfggrtt', 'apple tech'),
-(3, 'sumsung', '098888888', 'sumsung@n.m', 'asjjax asxjsa', 'sumsung company');
+(3, 'sumsung', '098888888', 'sumsung@n.m', 'asjjax asxjsa', 'sumsung company'),
+(6, 'kk', '0000000', 'lll@jjj.cc', 'wdfggrtt', 'sumsung company');
 
 -- --------------------------------------------------------
 
@@ -186,7 +196,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT pour la table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT pour la table `login`
@@ -198,7 +208,7 @@ ALTER TABLE `login`
 -- AUTO_INCREMENT pour la table `suppliers`
 --
 ALTER TABLE `suppliers`
-  MODIFY `Code_Supplier` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `Code_Supplier` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT pour la table `users`

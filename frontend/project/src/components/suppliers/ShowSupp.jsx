@@ -7,7 +7,7 @@ export default function ShowSupp() {
   const [supplier, setSupplier] = useState([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:8081/suppliers/${id}`)
+    axios.get(`http://localhost:8081/suppliers/show/${id}`)
       .then(res => {
         setSupplier(res.data.result || []);
       })

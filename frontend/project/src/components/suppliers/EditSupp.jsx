@@ -13,8 +13,9 @@ const EditSupp = () => {
   });
   const navigate = useNavigate();
 
+
   useEffect(() => {
-    axios.get(`http://localhost:8081/suppliers/${id}`)
+    axios.get(`http://localhost:8081/suppliers/show/${id}`)
       .then(res => {
         if (res.data && res.data.result && Array.isArray(res.data.result) && res.data.result.length > 0) {
           setSupplier({

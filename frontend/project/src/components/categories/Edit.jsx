@@ -11,7 +11,9 @@ const Edit = () => {
     axios.get(`http://localhost:8081/show/${id}`)
       .then(res => {
         if (res.data && res.data.result && Array.isArray(res.data.result) && res.data.result.length > 0) {
-          setValues({ name: res.data.result[0].name, created_date: res.data.result[0].created_date });
+          setValues({ 
+            name: res.data.result[0].name, 
+            created_date: res.data.result[0].created_date });
         } else {
           console.error('Invalid data structure in response:', res.data);
         }
@@ -19,12 +21,22 @@ const Edit = () => {
       .catch(err => {
         console.error(err);
       });
-  }, []);
+  }, [id]);
 
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setValues(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+  
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.put('http://localhost:8081/edit/'+id, values)
+    axios.put(`http://localhost:8081/edit/${id}`, values)
     .then(res=>{
+      console.log(res.data);
       navigate('/categories')
     })
       
@@ -48,16 +60,16 @@ const Edit = () => {
       <div>
         {values !== null ? (
           <form onSubmit={handleSubmit}>
-            <div className='mb-3'>
-              <label htmlFor='name' className='form-label'>Category Name</label>
-              <input type='text' className='form-control' id='name' name='name' value={values.name} onChange={e=>setValues({...values, name: e.target.value})} required />
+            <div className='form-group mb-3'>
+              <label>Category Name</label>
+              <input type='text' className='form-control' id='name' name='name' value={values.name} onChange={handleChange} required />
             </div>
             <div className='mb-3'>
-              <label htmlFor='created_date' className='form-label'>Created Date</label>
+              <label>Created Date</label>
               <input type='text' className='form-control' id='created_date' name='created_date' value={values.created_date}  onChange={e=>setValues({...values, created_date: e.target.value})} readOnly />
             </div>
-            <button  className='btn btn-primary'>Update</button>
-            <Link to={`/categories/${id}`} className='btn btn-secondary ms-2'>Cancel</Link>
+            <button type="submit" className='btn btn-primary'>Update</button>
+            <Link to={`/categories`} className='btn btn-secondary ms-2'>Cancel</Link>
           </form>
         ) : (
           <p>No data available for this category.</p>
