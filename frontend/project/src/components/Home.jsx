@@ -29,11 +29,12 @@ export default function Home() {
     axios.get('http://localhost:8081/logout')
     .then(res => {
       location.reload(true);
+      navigate('/login', { replace: true });
     }).catch(err => console.log(err))
   }
 
   return (
-    <div className='container mt-4'>
+    <div className='container mt-4'style={{'paddingLeft': '40px'}}>
       
       welcom home
       {

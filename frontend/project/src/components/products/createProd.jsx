@@ -9,8 +9,7 @@ export default function CreateProd() {
         price: '',
         quantity: '',
         supplier: '',
-        created_date: '',
-        Product_Image: ''
+        productImage: null 
     });
     const [categories, setCategories] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
@@ -36,6 +35,14 @@ export default function CreateProd() {
             });
     }, []);
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        setProduct(prevProduct => ({
+            ...prevProduct,
+            productImage: file
+        }));
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setProduct(prevProduct => ({
@@ -44,13 +51,21 @@ export default function CreateProd() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const created_date = new Date().toISOString();
-        axios.post('http://localhost:8081/products/create', {...product,created_date:created_date})
+
+        const formData = new FormData();
+        formData.append('name', product.name);
+        formData.append('category', product.category);
+        formData.append('price', product.price);
+        formData.append('quantity', product.quantity);
+        formData.append('supplier', product.supplier);
+        formData.append('productImage', product.productImage);
+
+        axios.post('http://localhost:8081/products/create', formData)
             .then(res => {
-                console.log(product);
-                navigate('/products')
+                console.log(res.data);
+                navigate('/products');
             })
             .catch(err => {
                 console.error('Error creating product:', err);
@@ -58,7 +73,7 @@ export default function CreateProd() {
     };
 
     return (
-        <div className="container mt-4">
+        <div className="container mt-4" style={{ paddingLeft: '40px' }}>
             <h3>Create Product</h3>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
@@ -92,12 +107,11 @@ export default function CreateProd() {
                     </select>
                 </div>
                 <div className="form-group">
-                    <label htmlFor="Product_Image">Product Image:</label>
-                    <input type="text" className="form-control" name="Product_Image" id="Product_Image" value={product.Product_Image} onChange={handleChange} />
+                    <label htmlFor="productImage">Product Image:</label>
+                    <input type="file" className="form-control" name="productImage" id="productImage" onChange={handleFileChange} />
                 </div>
                 <button type="submit" className="btn btn-primary">Create Product</button>
             </form>
         </div>
     );
 }
-

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function Employees() {
     return(
-        <div className='container mt-4'>
+        <div className='container mt-4' style={{'paddingLeft': '40px'}}>
             <div style={{marginTop:'70px'}}>
                 <h3 >All Employees</h3>
                 <p>

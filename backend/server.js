@@ -4,8 +4,10 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import cookieParser from 'cookie-parser';
+import multer from 'multer';
 
 const salt = 10;
+const upload = multer({ dest: 'uploads/' });
 
 const app = express();
 app.use(express.json());
@@ -156,21 +158,36 @@ app.get('/products',verifyUser, (req, res) => {
 });
 
 // Create a new product
-app.post('/products/create', verifyUser, (req, res) => {
-    const { name, category, price, quantity, supplier, created_date, Product_Image } = req.body;
+// Route to create a new product
+app.post('/products/create', upload.single('productImage'), (req, res) => {
+    const { name, category, price, quantity, supplier } = req.body;
+    const productImage = req.file.path; // Path to the uploaded file
 
-    // First, fetch the supplier's code based on the supplier's name
+    // Fetch the code_supplier based on the supplier's name
     const getSupplierCodeSql = "SELECT Code_Supplier FROM suppliers WHERE Name = ?";
-    db.query(getSupplierCodeSql, [supplier], (err, supplierResult) => {
-        if (err) return res.json({ Error: "Error fetching supplier code" });
-        const supplierCode = supplierResult[0].Code_Supplier;
+    db.query(getSupplierCodeSql, [supplier], (err, result) => {
+        if (err) {
+            console.error('Error fetching supplier code:', err);
+            return res.status(500).json({ error: 'Error creating product' });
+        }
+        
+        // Check if the supplier exists
+        if (result.length === 0) {
+            return res.status(400).json({ error: 'Supplier not found' });
+        }
 
-        // Next, insert the new product into the database
-        const insertProductSql = "INSERT INTO products (`name`, `categorie`, `prix`, `quantite`, `Code_Supplier`, `Date_Ajout`, `Product_Image`) VALUES (?)";
-        const values = [name, category, price, quantity, supplierCode, created_date,Product_Image];
+        const codeSupplier = result[0].Code_Supplier;
+
+        // Insert the product into the database
+        const insertProductSql = "INSERT INTO products (`name`, `categorie`, `prix`, `quantite`, `code_supplier`, `date_ajout`, `product_image`) VALUES (?, ?, ?, ?, ?, NOW(), ?)";
+        const values = [name, category, price, quantity, codeSupplier, productImage];
+
         db.query(insertProductSql, values, (err, result) => {
-            if (err) return res.json({ Error: "Error creating product" });
-            return res.json({ Status: 'Success' });
+            if (err) {
+                console.error('Error creating product:', err);
+                return res.status(500).json({ error: 'Error creating product' });
+            }
+            return res.status(200).json({ message: 'Product created successfully' });
         });
     });
 });

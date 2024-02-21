@@ -45,7 +45,7 @@ export default function Products() {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4" style={{'paddingLeft': '40px'}}>
       <div style={{ marginTop: '70px' }}>
         <h3>Products</h3>
         <p>

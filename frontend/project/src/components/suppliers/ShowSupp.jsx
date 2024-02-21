@@ -18,7 +18,7 @@ export default function ShowSupp() {
   
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4" style={{'paddingLeft': '40px'}}>
 
       <div>
         <h3 style={{ marginTop: '70px' }}>Supplier Details</h3>
