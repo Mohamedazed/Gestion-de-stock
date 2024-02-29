@@ -27,7 +27,7 @@ export default function Products() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8081/delete/${id}`);
+      await axios.delete(`http://localhost:8081/products/delete/${id}`);
       setData(prevData => prevData.filter(prod => prod.Code_Product !== id));
     } catch (error) {
       console.error('Error deleting product:', error);

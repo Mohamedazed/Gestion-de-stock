@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import cookieParser from 'cookie-parser';
 import multer from 'multer';
+import path from 'path';
 
 const salt = 10;
 const upload = multer({ dest: 'uploads/' });
@@ -27,7 +28,19 @@ const db = mysql.createConnection({
     password: '',
     database: 'stock_management',
   });
+//////
+  const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
 
+const uploadImage = multer({ storage: storage });
+app.use('/uploads', express.static('uploads'));
+/////
 const verifyUser = (req, res, next)=>{
     const token = req.cookies.token;
     if(!token){
@@ -158,7 +171,6 @@ app.get('/products',verifyUser, (req, res) => {
 });
 
 // Create a new product
-// Route to create a new product
 app.post('/products/create', upload.single('productImage'), (req, res) => {
     const { name, category, price, quantity, supplier } = req.body;
     const productImage = req.file.path; // Path to the uploaded file
@@ -208,30 +220,84 @@ app.get('/products/show/:id', verifyUser, (req, res) => {
     });
 });
 
-// Route to edit a product
+// // Route to edit a product
 app.put('/products/edit/:id', verifyUser, (req, res) => {
-    const productId = req.params.id;
-    const { name, category, price, quantity, supplier } = req.body;
-
-    // First, fetch the supplier's code based on the supplier's name
+    const id = req.params.id;
+    const values = [
+        req.body.name,
+        req.body.Categorie,
+        req.body.Prix,
+        req.body.Quantite,
+        req.body.supplierName,
+        id
+    ];
+    
+    // Fetch the supplier's code based on the supplier's name
     const getSupplierCodeSql = "SELECT Code_Supplier FROM suppliers WHERE Name = ?";
-    db.query(getSupplierCodeSql, [supplier], (err, supplierResult) => {
+    db.query(getSupplierCodeSql, [req.body.supplierName], (err, supplierResult) => {
         if (err) return res.json({ Error: "Error fetching supplier code" });
+        
+        // Ensure that a supplier code is found
+        if (supplierResult.length === 0) {
+            return res.status(400).json({ Error: "Supplier not found" });
+        }
+        
+        // Extract the supplier code from the result
         const supplierCode = supplierResult[0].Code_Supplier;
 
-        // Next, update the product record with the new details
-        const updateProductSql = `
-            UPDATE products 
-            SET name=?, categorie=?, prix=?, quantite=?, Code_Supplier=?
-            WHERE Code_Product=?
-        `;
-        const values = [name, category, price, quantity, supplierCode, productId];
-        db.query(updateProductSql, values, (err, result) => {
-            if (err) return res.json({ Error: "Error updating product" });
-            return res.json({ Status: 'Success' });
+        // Update the product record with the new details
+        const updateProductSql = "UPDATE products SET `name`=?, `categorie`=?, `prix`=?, `quantite`=?, `Code_Supplier`=? WHERE Code_Product = ?";
+        db.query(updateProductSql, [...values.slice(0, 4), supplierCode, ...values.slice(5)], (err, result) => {
+            if (err) return res.json({ Message: "Error updating product" });
+            return res.json({ result });
         });
     });
 });
+// app.put('/products/edit/:id', verifyUser, uploadImage.single('productImage'), (req, res) => {
+//     const id = req.params.id;
+//     const values = [
+//         req.body.name,
+//         req.body.categorie,
+//         req.body.prix,
+//         req.body.quantite,
+//         req.body.supplier,
+//         id
+//     ];
+
+//     let updateProductSql;
+//     let sqlParams;
+
+//     if (req.file) {
+//         // If a new image is uploaded
+//         updateProductSql = "UPDATE products SET `name`=?, `categorie`=?, `prix`=?, `quantite`=?, `Code_Supplier`=?, `Product_Image`=? WHERE Code_Product = ?";
+//         sqlParams = [...values.slice(0, 4), req.file.path, ...values.slice(5)];
+//     } else {
+//         // If no new image is uploaded
+//         updateProductSql = "UPDATE products SET `name`=?, `categorie`=?, `prix`=?, `quantite`=?, `Code_Supplier`=? WHERE Code_Product = ?";
+//         sqlParams = [...values.slice(0, 4), ...values.slice(5)];
+//     }
+
+//     // Fetch the supplier's code based on the supplier's name
+//     const getSupplierCodeSql = "SELECT Code_Supplier FROM suppliers WHERE Name = ?";
+//     db.query(getSupplierCodeSql, [req.body.supplier], (err, supplierResult) => {
+//         if (err) return res.json({ Error: "Error fetching supplier code" });
+
+//         // Ensure that a supplier code is found
+//         if (supplierResult.length === 0) {
+//             return res.status(400).json({ Error: "Supplier not found" });
+//         }
+
+//         // Extract the supplier code from the result
+//         const supplierCode = supplierResult[0].Code_Supplier;
+
+//         // Update the product record with the new details
+//         db.query(updateProductSql, [...sqlParams.slice(0, 4), supplierCode, ...sqlParams.slice(5)], (err, result) => {
+//             if (err) return res.json({ Message: "Error updating product" });
+//             return res.json({ result });
+//         });
+//     });
+// });
+
 
 
 
@@ -307,12 +373,8 @@ app.delete('/suppliers/delete/:id', verifyUser, (req, res) => {
 
 // Export the Express app
 export default app;
-
-
 //////////////
-  
-
-
 app.listen(8081, () => {
     console.log("Server is running ...");
   });
+
