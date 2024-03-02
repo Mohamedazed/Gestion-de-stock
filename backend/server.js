@@ -160,6 +160,30 @@ app.delete('/delete/:id' , (req, res) => {
         return res.json({ result });
     })
 });
+
+// Route to search categories by ID and name
+app.get('/categories/search', verifyUser, (req, res) => {
+    // Extract ID and name from query parameters
+    const { id, name } = req.query;
+    
+    // SQL query to search for categories
+    let sql = "SELECT * FROM categories WHERE 1";
+
+    // Check if ID parameter is provided
+    if (id) {
+        sql += ` AND id = '${id}'`;
+    }
+    // Check if name parameter is provided
+    if (name) {
+        sql += ` AND name LIKE '%${name}%'`;
+    }
+
+    db.query(sql, (err, result) => {
+        if (err) return res.json({ Message: "Error searching for categories" });
+        return res.json({ result });
+    });
+});
+
 ///////////////products
 // Get all products
 app.get('/products',verifyUser, (req, res) => {
@@ -171,7 +195,7 @@ app.get('/products',verifyUser, (req, res) => {
 });
 
 // Create a new product
-app.post('/products/create', upload.single('productImage'), (req, res) => {
+app.post('/products/create', uploadImage.single('productImage'), (req, res) => {
     const { name, category, price, quantity, supplier } = req.body;
     const productImage = req.file.path; // Path to the uploaded file
 
@@ -298,9 +322,6 @@ app.put('/products/edit/:id', verifyUser, (req, res) => {
 //     });
 // });
 
-
-
-
 // Delete a product
 app.delete('/products/delete/:id', verifyUser, (req, res) => {
     const sql = "DELETE FROM products WHERE Code_Product = ?";
@@ -310,6 +331,54 @@ app.delete('/products/delete/:id', verifyUser, (req, res) => {
         return res.json({ result });
     });
 });
+
+// Route to search products by ID, name, category, and supplier
+app.get('/products/search', verifyUser, (req, res) => {
+    // Extract parameters from query string
+    const { id, name, category, supplier } = req.query;
+
+    // SQL query to search for products
+    let sql = "SELECT * FROM products WHERE 1";
+
+    // Check if id parameter is provided
+    if (id) {
+        sql += ` AND Code_Product = '${id}'`;
+    }
+    // Check if name parameter is provided
+    if (name) {
+        sql += ` AND name LIKE '%${name}%'`;
+    }
+    // Check if category parameter is provided
+    if (category) {
+        sql += ` AND Categorie LIKE '%${category}%'`;
+    }
+    // Check if supplier parameter is provided
+    if (supplier) {
+        // Fetch the Code_Supplier based on the supplier's name
+        const getSupplierCodeSql = "SELECT Code_Supplier FROM suppliers WHERE Name = ?";
+        db.query(getSupplierCodeSql, [supplier], (err, result) => {
+            if (err || result.length === 0) {
+                return res.status(400).json({ Error: 'Supplier not found' });
+            }
+            const supplierCode = result[0].Code_Supplier;
+            sql += ` AND Code_Supplier = '${supplierCode}'`;
+
+            // Execute the final query
+            db.query(sql, (err, result) => {
+                if (err) return res.status(500).json({ Error: 'Error searching for products' });
+                return res.json({ result });
+            });
+        });
+        return; // Return to avoid executing the final query outside the callback
+    }
+
+    // Execute the final query if no supplier parameter is provided
+    db.query(sql, (err, result) => {
+        if (err) return res.status(500).json({ Error: 'Error searching for products' });
+        return res.json({ result });
+    });
+});
+
 ////////////////suppliers
 // Route to get all suppliers
 app.get('/suppliers', verifyUser, (req, res) => {
@@ -370,6 +439,30 @@ app.delete('/suppliers/delete/:id', verifyUser, (req, res) => {
         return res.json({ result });
     });
 });
+
+// Route to search suppliers by code and name
+app.get('/suppliers/search', verifyUser, (req, res) => {
+    // Extract code and name from query parameters
+    const { code, name } = req.query;
+    
+    // SQL query to search for suppliers
+    let sql = "SELECT * FROM Suppliers WHERE 1";
+
+    // Check if code parameter is provided
+    if (code) {
+        sql += ` AND Code_Supplier = '${code}'`;
+    }
+    // Check if name parameter is provided
+    if (name) {
+        sql += ` AND Name LIKE '%${name}%'`;
+    }
+
+    db.query(sql, (err, result) => {
+        if (err) return res.json({ Message: "Error searching for suppliers" });
+        return res.json({ result });
+    });
+});
+
 
 // Export the Express app
 export default app;

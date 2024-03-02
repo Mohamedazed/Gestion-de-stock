@@ -60,7 +60,7 @@ export default function EditProd() {
     };
 
     return (
-        <div className="container mt-4" style={{ paddingLeft: '40px' }}>
+        <div className="container">
             {Object.keys(product).length > 0 && (
                 <>
                     <h3>Edit Product</h3>

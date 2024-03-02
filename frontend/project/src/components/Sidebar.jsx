@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, Route, Routes } from 'react-router-dom';
+import './sidebar.css';
 import Home from './Home';
 import Categories from './categories/Categories';
 import Products from './products/Products';
 import Suppliers from './suppliers/Suppliers';
 import Profile from './Profile';
 import Employees from './Employees';
-import Login from './Login';
-import Signup from './Signup';
-import './sidebar.css';
+import Create from './categories/Create';
+import Show from './categories/Show';
+import Edit from './categories/Edit';
+import CreateProd from './products/createProd';
+import CreateSupp from './suppliers/CreateSupp';
+import EditSupp from './suppliers/EditSupp';
+import ShowSupp from './suppliers/ShowSupp';
+import ShowProd from './products/ShowProd';
+import EditProd from './products/EditProd';
 import {
   UserOutlined,
   AppstoreAddOutlined,
@@ -17,6 +24,7 @@ import {
   TeamOutlined,
 } from '@ant-design/icons';
 import axios from 'axios';
+import { Modal } from 'bootstrap';
 
 const Sidebar = () => {
   const [show, setShow] = useState(false);
@@ -97,21 +105,24 @@ const Sidebar = () => {
           </Link>
         </nav>
       </aside>
-
-      {/* <div >
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/categories" element={<Categories />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/suppliers" element={<Suppliers />} />
-        <Route path="/employees" element={<Employees />} />
-        <Route path="/profile" element={<Profile />} />
-        
+                <Route path="/" element={<Home />} />
+                <Route path="/categories" element={<Categories />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/suppliers" element={<Suppliers />} />
+                <Route path="/employees" element={<Employees />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/categories/create" element={<Create />} />
+                {/* <Route path="/show/:id" element={<Show />} /> */}
+                <Route path="/show/:id" element={<Modal />} />
+                <Route path="/edit/:id" element={<Edit />} />
+                <Route path='/products/create' element={<CreateProd/>}/>
+                <Route path='/products/edit/:id' element={<EditProd/>}/>
+                <Route path='/products/show/:id' element={<ShowProd/>} />
+                <Route path='/suppliers/create' element={<CreateSupp/>}/>
+                <Route path="/suppliers/edit/:id" element={<EditSupp />} />
+                <Route path="/suppliers/show/:id" element={<ShowSupp/>} />
       </Routes>
-      </div> */}
-
     </main>
   ) : (<div>
          
@@ -122,3 +133,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+

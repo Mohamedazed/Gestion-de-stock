@@ -21,6 +21,7 @@ import EditSupp from './components/suppliers/EditSupp';
 import ShowSupp from './components/suppliers/ShowSupp';
 import ShowProd from './components/products/ShowProd';
 import EditProd from './components/products/EditProd';
+import { Modal } from 'bootstrap';
 
 function App() {
   return (
@@ -32,7 +33,7 @@ function App() {
           path="/*"
           element={
             <div>
-              <Sidebar />
+              <Sidebar >
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/categories" element={<Categories />} />
@@ -41,7 +42,8 @@ function App() {
                 <Route path="/employees" element={<Employees />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/categories/create" element={<Create />} />
-                <Route path="/show/:id" element={<Show />} />
+                {/* <Route path="/show/:id" element={<Show />} /> */}
+                <Route path="/show/:id" element={<Modal />} />
                 <Route path="/edit/:id" element={<Edit />} />
                 <Route path='/products/create' element={<CreateProd/>}/>
                 <Route path='/products/edit/:id' element={<EditProd/>}/>
@@ -50,6 +52,7 @@ function App() {
                 <Route path="/suppliers/edit/:id" element={<EditSupp />} />
                 <Route path="/suppliers/show/:id" element={<ShowSupp/>} />
               </Routes>
+              </Sidebar >
             </div>
           }
         />

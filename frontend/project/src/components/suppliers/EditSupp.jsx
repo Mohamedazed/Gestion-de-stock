@@ -55,7 +55,7 @@ const EditSupp = () => {
   };
 
   return (
-    <div className="container mt-4" style={{'paddingLeft': '40px'}}>
+    <div className="container" >
         <div>
         <h3 style={{ marginTop: '70px' }}>Edit Supplier</h3>
         <p>

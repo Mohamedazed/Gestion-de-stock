@@ -73,7 +73,7 @@ export default function CreateProd() {
     };
 
     return (
-        <div className="container mt-4" style={{ paddingLeft: '40px' }}>
+        <div className="container">
             <h3>Create Product</h3>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">

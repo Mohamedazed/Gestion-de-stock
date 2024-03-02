@@ -34,7 +34,7 @@ export default function Home() {
   }
 
   return (
-    <div className='container mt-4'style={{'paddingLeft': '40px'}}>
+    <div className='container'>
       
       welcom home
       {

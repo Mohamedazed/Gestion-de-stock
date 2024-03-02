@@ -47,7 +47,7 @@ const Edit = () => {
 
  
   return (
-    <div className='container mt-4'>
+    <div className='container'>
       <div>
         <h3 style={{ marginTop: '70px' }}>Edit Category</h3>
         <p>

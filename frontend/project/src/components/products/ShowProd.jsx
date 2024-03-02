@@ -17,7 +17,7 @@ export default function ShowProd() {
   }, [id]); // Add id as a dependency
 
   return (
-    <div className="container mt-4" style={{'paddingLeft': '40px'}}>
+    <div className="container">
       <div style={{ marginTop: '70px' }}>
         <h3>Product Details</h3>
         <p>

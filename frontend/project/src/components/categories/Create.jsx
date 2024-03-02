@@ -20,7 +20,7 @@ export default function Create() {
     };
 
     return (
-        <div className="container mt-4">
+        <div className="container">
             
           <div>
             <h3 style={{ marginTop: '70px' }}>Create Category</h3>
