@@ -151,7 +151,7 @@ app.put('/edit/:id', verifyUser, (req, res) => {
     })
 });
 
-app.delete('/delete/:id' , (req, res) => {
+app.delete('/delete/:id',verifyUser , (req, res) => {
     const sql = "DELETE FROM categories WHERE id = ?";
     const id = req.params.id;
 

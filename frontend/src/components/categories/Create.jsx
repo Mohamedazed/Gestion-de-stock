@@ -5,6 +5,7 @@ import axios from 'axios';
 export default function Create() {
     const [categoryName, setCategoryName] = useState('');
     const navigate = useNavigate();
+    
     const handleCreate = (e) => {
         e.preventDefault();
         const created_date = new Date().toISOString();
