@@ -8,7 +8,7 @@ import multer from 'multer';
 import path from 'path';
 
 const salt = 10;
-const upload = multer({ dest: 'uploads/' });
+// const upload = multer({ dest: 'uploads/' });
 
 const app = express();
 app.use(express.json());
@@ -40,7 +40,9 @@ const db = mysql.createConnection({
 
 const uploadImage = multer({ storage: storage });
 app.use('/uploads', express.static('uploads'));
+
 /////
+
 const verifyUser = (req, res, next)=>{
     const token = req.cookies.token;
     if(!token){
@@ -151,6 +153,14 @@ app.put('/edit/:id', verifyUser, (req, res) => {
     })
 });
 
+app.get('/cat_count', (req, res) => {
+    const sql = "select count(id) as nbCat from categories";
+    db.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
+
 app.delete('/delete/:id',verifyUser , (req, res) => {
     const sql = "DELETE FROM categories WHERE id = ?";
     const id = req.params.id;
@@ -163,20 +173,11 @@ app.delete('/delete/:id',verifyUser , (req, res) => {
 
 // Route to search categories by ID and name
 app.get('/categories/search', verifyUser, (req, res) => {
-    // Extract ID and name from query parameters
     const { id, name } = req.query;
-    
-    // SQL query to search for categories
     let sql = "SELECT * FROM categories WHERE 1";
 
-    // Check if ID parameter is provided
-    if (id) {
-        sql += ` AND id = '${id}'`;
-    }
-    // Check if name parameter is provided
-    if (name) {
-        sql += ` AND name LIKE '%${name}%'`;
-    }
+    if (id) { sql += ` AND id = '${id}'`;}
+    if (name) { sql += ` AND name LIKE '%${name}%'`;}
 
     db.query(sql, (err, result) => {
         if (err) return res.json({ Message: "Error searching for categories" });
@@ -334,27 +335,19 @@ app.delete('/products/delete/:id', verifyUser, (req, res) => {
 
 // Route to search products by ID, name, category, and supplier
 app.get('/products/search', verifyUser, (req, res) => {
-    // Extract parameters from query string
     const { id, name, category, supplier } = req.query;
-
-    // SQL query to search for products
     let sql = "SELECT * FROM products WHERE 1";
 
-    // Check if id parameter is provided
     if (id) {
         sql += ` AND Code_Product = '${id}'`;
     }
-    // Check if name parameter is provided
     if (name) {
         sql += ` AND name LIKE '%${name}%'`;
     }
-    // Check if category parameter is provided
     if (category) {
         sql += ` AND Categorie LIKE '%${category}%'`;
     }
-    // Check if supplier parameter is provided
     if (supplier) {
-        // Fetch the Code_Supplier based on the supplier's name
         const getSupplierCodeSql = "SELECT Code_Supplier FROM suppliers WHERE Name = ?";
         db.query(getSupplierCodeSql, [supplier], (err, result) => {
             if (err || result.length === 0) {
@@ -363,16 +356,14 @@ app.get('/products/search', verifyUser, (req, res) => {
             const supplierCode = result[0].Code_Supplier;
             sql += ` AND Code_Supplier = '${supplierCode}'`;
 
-            // Execute the final query
             db.query(sql, (err, result) => {
                 if (err) return res.status(500).json({ Error: 'Error searching for products' });
                 return res.json({ result });
             });
         });
-        return; // Return to avoid executing the final query outside the callback
-    }
+        return;
+     }
 
-    // Execute the final query if no supplier parameter is provided
     db.query(sql, (err, result) => {
         if (err) return res.status(500).json({ Error: 'Error searching for products' });
         return res.json({ result });
@@ -389,21 +380,22 @@ app.get('/suppliers', verifyUser, (req, res) => {
     });
 });
 
-// Route to create a new supplier
-app.post('/suppliers/create', (req, res) => {
-    const sql = "INSERT INTO Suppliers (`Name`, `Phone`, `Email`, `Adresse`, `Company`) VALUES (?)";
+app.post('/suppliers/create', uploadImage.single('image'), (req, res) => {
+    const sql = "INSERT INTO Suppliers (`Name`, `Phone`, `Email`, `Adresse`, `Company`,`image`) VALUES (?, ?, ?, ?, ?, ?)";
     const values = [
         req.body.Name,
         req.body.Phone,
         req.body.Email,
         req.body.Adresse,
-        req.body.Company
+        req.body.Company,
+        req.file.path 
     ];
-    db.query(sql, [values], (err, result) => {
+    db.query(sql, values, (err, result) => {
         if (err) return res.json({ Error: "Error creating supplier" });
         return res.json({ result });
     });
 });
+
 
 app.get('/suppliers/show/:id', verifyUser, (req, res) => {
     const sql = "SELECT * FROM Suppliers WHERE Code_Supplier = ?";
@@ -414,20 +406,35 @@ app.get('/suppliers/show/:id', verifyUser, (req, res) => {
     });
 });
 
-app.put('/suppliers/edit/:id', verifyUser, (req, res) => {
-    const sql = "UPDATE Suppliers SET `Name`=?, `Phone`=?, `Email`=?, `Adresse`=?, `Company`=? WHERE Code_Supplier = ?";
+// app.put('/suppliers/edit/:id', verifyUser, (req, res) => {
+//     const sql = "UPDATE Suppliers SET `Name`=?, `Phone`=?, `Email`=?, `Adresse`=?, `Company`=? WHERE Code_Supplier = ?";
+//     const id = req.params.id;
+//     const values = [
+//         req.body.Name,
+//         req.body.Phone,
+//         req.body.Email,
+//         req.body.Adresse,
+//         req.body.Company,
+//         id
+//     ];
+//     db.query(sql, values, (err, result) => {
+//         if (err) return res.json({ Message: "Error updating supplier" });
+//         return res.json({ result });
+//     });
+// });
+
+app.put('/suppliers/edit/:id', verifyUser, uploadImage.single('image'), (req, res) => {
     const id = req.params.id;
-    const values = [
-        req.body.Name,
-        req.body.Phone,
-        req.body.Email,
-        req.body.Adresse,
-        req.body.Company,
-        id
-    ];
-    db.query(sql, values, (err, result) => {
-        if (err) return res.json({ Message: "Error updating supplier" });
-        return res.json({ result });
+    const { Name, Phone, Email, Adresse, Company } = req.body;
+    let image = req.file ? req.file.path : null;
+    // Update the supplier in the database
+    const sql = "UPDATE Suppliers SET Name=?, Phone=?, Email=?, Adresse=?, Company=? , image=? WHERE Code_Supplier=?";
+    db.query(sql, [Name, Phone, Email, Adresse, Company, image, id], (err, result) => {
+        if (err) {
+            console.error('Error updating supplier:', err);
+            return res.status(500).json({ error: 'Error updating supplier' });
+        }
+        return res.status(200).json({ message: 'Supplier updated successfully' });
     });
 });
 
@@ -439,6 +446,14 @@ app.delete('/suppliers/delete/:id', verifyUser, (req, res) => {
         return res.json({ result });
     });
 });
+
+app.get('/supp_count', (req, res) => {
+    const sql = "select count(Code_Supplier) as nbSupp from suppliers";
+    db.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
 
 // Route to search suppliers by code and name
 app.get('/suppliers/search', verifyUser, (req, res) => {
@@ -462,7 +477,177 @@ app.get('/suppliers/search', verifyUser, (req, res) => {
         return res.json({ result });
     });
 });
+/////////////////Employees
+app.get("/employes",verifyUser, (req, res) => {
+    const sql = "SELECT * FROM Employes";
+    db.query(sql, (err, result) => {
+        if (err) return res.json({ Message: "Error inside server" });
+        return res.json({ result });
+    });
+});
 
+app.get('/employee_count', (req, res) => {
+    const sql = "select count(Code_Employee) as employee from Employes";
+    db.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
+
+app.get('/salary_count', (req, res) => {
+    const sql = "select sum(salary) as salaryOFEmp from Employes";
+    db.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
+
+app.post('/employes/create', uploadImage.single('image'), (req, res) => {
+    const { name, email, password, address, salary, type_id } = req.body;
+    const imagePath = req.file ? req.file.path : null;
+    const newEmployee = {
+        Name: name,
+        Email: email,
+        Phone: password,
+        Adresse: address,
+        salary: salary,
+        image: imagePath,
+        type_id: type_id
+    };
+    const sql = "INSERT INTO employes SET ?";
+    
+    db.query(sql, newEmployee, (err, result) => {
+        if (err) {
+            console.error("Error creating employee:", err);
+            return res.json({ Status: false, Error: "Error creating employee" });
+        }
+        return res.json({ Status: true, Message: "Employee created successfully" });
+    });
+});
+
+app.put('/employes/edit/:id', uploadImage.single('image'), (req, res) => {
+    const id = req.params.id;
+    const { Name, Email, Phone, Adresse, salary, type_id } = req.body;
+    let image = req.file ? req.file.path : null;
+    const sql = `UPDATE employes 
+        set Name = ?, Email = ?, Phone= ? , salary = ?, Adresse = ?, type_id = ? ,image = ?
+        Where Code_Employee = ?`
+        const values = [Name, Email, Phone, Adresse, salary, type_id, image, id];
+    db.query(sql,values, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
+
+app.get('/employes/:id', verifyUser, (req, res) => {
+    const id = req.params.id;
+    const sql = "SELECT * FROM employes WHERE Code_Employee = ?";
+    db.query(sql, [id], (err, result) => {
+        if (err) return res.json({ Message: "Error inside server" });
+        return res.json({ result });
+    });
+});
+
+
+app.get('/employees/search', (req, res) => {
+    const { code, name , salary} = req.query;
+    let sql = "SELECT * FROM Employes WHERE 1";
+
+    if (code) {
+        sql += ` AND Code_Employee = '${code}'`;
+    }
+    if (name) {
+        sql += ` AND Name LIKE '%${name}%'`;
+    }
+    if (salary) {
+        sql += ` AND salary LIKE '${salary}'`;
+    }
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.error("Error searching for employees:", err);
+            return res.status(500).json({ Status: false, Error: "Error searching for employees" });
+        }
+        return res.json({ Status: true, result });
+    });
+});
+
+////////////////types
+// Route to get all types
+app.get('/employees/types', (req, res) => {
+    const sql = "SELECT * FROM types";
+    db.query(sql, (err, result) => {
+        if (err) return res.json({ Message: "Error inside server" });
+        return res.json({ result });
+    });
+});
+
+app.delete('/employes/types/delete/:id', verifyUser, (req, res) => {
+    const sql = "DELETE FROM types WHERE id = ?";
+    const id = req.params.id;
+    db.query(sql, [id], (err, result) => {
+        if (err) return res.json({ Message: "Error deleting supplier" });
+        return res.json({ result });
+    });
+});
+
+app.get('/employees/types/search', (req, res) => {
+    const { name } = req.query;
+    let sql = "SELECT * FROM types WHERE 1";
+
+    if (name) {
+        sql += ` AND name LIKE '%${name}%'`;
+    }
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.error("Error searching for employees:", err);
+            return res.status(500).json({ Status: false, Error: "Error searching for employees" });
+        }
+        return res.json({ Status: true, result });
+    });
+});
+
+// Route to get a specific type by ID
+app.get('/employees/types/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = "SELECT * FROM types WHERE id = ?";
+    db.query(sql, [id], (err, result) => {
+        if (err) return res.json({ Message: "Error inside server" });
+        return res.json({ result });
+    });
+});
+
+// Route to edit a type
+app.put('/employees/types/edit/:id', (req, res) => {
+    const id = req.params.id;
+    const { name } = req.body;
+    const sql = "UPDATE types SET `name`=? WHERE id = ?";
+    db.query(sql, [name, id], (err, result) => {
+        if (err) return res.json({ Message: "Error inside server" });
+        return res.json({ result });
+    });
+});
+
+app.post('/types/create', (req, res) => {
+    const { name, created_date } = req.body;
+    const sql = "INSERT INTO types (`name`, `created_date`) VALUES (?, ?)";
+    db.query(sql, [name, created_date], (err, result) => {
+        if (err) {
+            console.error('Error creating type:', err);
+            return res.status(500).json({ error: 'Error creating type' });
+        }
+        return res.status(200).json({ message: 'Type created successfully' });
+    });
+});
+
+app.get('/types_count', (req, res) => {
+    const sql = "select count(id) as nbType from types";
+    db.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
 
 // Export the Express app
 export default app;

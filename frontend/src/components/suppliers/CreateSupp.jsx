@@ -25,8 +25,7 @@
 //     axios.post('http://localhost:8081/suppliers/create', formData)
 //       .then(res => {
 //         console.log(res.data);
-//         // Redirect to suppliers page after successful creation
-//         window.location.href = '/suppliers';
+//         navigate('/suppliers');
 //       })
 //       .catch(err => console.log(err));
 //   };
@@ -85,7 +84,8 @@ export default function CreateSupp() {
     Phone: '',
     Email: '',
     Adresse: '',
-    Company: ''
+    Company: '',
+    image: null
   });
   const navigate = useNavigate();
 
@@ -97,15 +97,36 @@ export default function CreateSupp() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    axios.post('http://localhost:8081/suppliers/create', formData)
-      .then(res => {
-        console.log(res.data);
-        navigate('/suppliers');
-      })
-      .catch(err => console.log(err));
-  };
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setFormData(prevState => ({
+        ...prevState,
+        image: file
+    }));
+};
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const formDataToSend = new FormData();
+  formDataToSend.append('Name', formData.Name);
+  formDataToSend.append('Phone', formData.Phone);
+  formDataToSend.append('Email', formData.Email);
+  formDataToSend.append('Adresse', formData.Adresse);
+  formDataToSend.append('Company', formData.Company);
+  formDataToSend.append('image', formData.image);
+
+  try {
+    const res = await axios.post('http://localhost:8081/suppliers/create', formDataToSend, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    console.log(res.data);
+    navigate('/suppliers');
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
     <div className="container">
@@ -139,6 +160,18 @@ export default function CreateSupp() {
           <div className="mb-3">
             <label htmlFor="Company" className="form-label">Company</label>
             <input type="text" className="form-control" id="Company" name="Company" value={formData.Company} onChange={handleChange} />
+          </div>
+          <div className="col-12 mb-3">
+            <label className="form-label" for="inputGroupFile01">
+              Select Image
+            </label>
+            <input
+              type="file"
+              className="form-control"
+              id="image"
+              name="image" 
+              onChange={handleFileChange}
+            />
           </div>
           <button type="submit" className="btn btn-primary">Submit</button>
           <Link to="/suppliers" className="btn btn-secondary">

@@ -20,7 +20,6 @@ const ShowProdModal=({ isOpen, onClose, product }) => {
             </div>
             <hr className='border border-warning'/>
           <div className='text-center'>
-            {/* <h3>ID: {product.Code_Product}</h3><hr /> */}
             <h3>{product.name}</h3>
             <h5 className='text-warning'>{product.Prix}DH</h5>
             <p>Quantity: {product.Quantite} Pieces | Category: {product.Categorie} | Supplier: {product.supplierName}</p>

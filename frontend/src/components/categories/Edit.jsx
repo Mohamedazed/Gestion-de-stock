@@ -64,10 +64,10 @@
 //               <label>Category Name</label>
 //               <input type='text' className='form-control' id='name' name='name' value={values.name} onChange={handleChange} required />
 //             </div>
-//             <div className='mb-3'>
-//               <label>Created Date</label>
-//               <input type='text' className='form-control' id='created_date' name='created_date' value={values.created_date}  onChange={e=>setValues({...values, created_date: e.target.value})} readOnly />
-//             </div>
+            // <div className='mb-3'>
+            //   <label>Created Date</label>
+            //   <input type='text' className='form-control' id='created_date' name='created_date' value={values.created_date}  onChange={e=>setValues({...values, created_date: e.target.value})} readOnly />
+            // </div>
 //             <button type="submit" className='btn btn-primary'>Update</button>
 //             <Link to={`/categories`} className='btn btn-secondary ms-2'>Cancel</Link>
 //           </form>

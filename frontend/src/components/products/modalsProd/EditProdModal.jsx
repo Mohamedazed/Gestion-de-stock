@@ -16,7 +16,7 @@ export default function EditProdModal({ isOpen, onClose, product, handleChange, 
                         <div className='text-center'>
                             {product.Product_Image && (
                                 <div className='border border-warning d-inline-block'>
-                                    <img src={`http://localhost:8081/${product.Product_Image.replace(/\\/g, '/')}`} alt="Product" height='200px' />
+                                    <img src={`http://localhost:8081/${product.Product_Image.replace(/\\/g, '/')}`} alt={product.name} height='200px' />
                                 </div>
                             )}
                         </div>

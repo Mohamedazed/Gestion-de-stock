@@ -6,7 +6,7 @@ import Categories from './categories/Categories';
 import Products from './products/Products';
 import Suppliers from './suppliers/Suppliers';
 import Profile from './Profile';
-import Employees from './Employees';
+// import Employees from './Employees';
 import Create from './categories/Create';
 import Show from './categories/Show';
 import Edit from './categories/Edit';
@@ -22,9 +22,16 @@ import {
   ShoppingCartOutlined,
   SolutionOutlined,
   TeamOutlined,
+  ApartmentOutlined,
 } from '@ant-design/icons';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
+import Types from './employes/types/types';
+import Employees from './employes/Employees';
+import CreateEmp from './employes/CreateEmp';
+import EditEmp from './employes/EditEmp';
+import EditType from './employes/types/EditType';
+import CreateType from './employes/types/CreateType';
 
 const Sidebar = () => {
   const [show, setShow] = useState(false);
@@ -92,6 +99,11 @@ const Sidebar = () => {
                 <i ><TeamOutlined /></i>
                 <span className='nav-link-name'>Employees</span>
               </Link>
+              <Link to='/employees/types' className='nav-link'>
+                <i ><ApartmentOutlined /></i>
+                <span className='nav-link-name'>Types</span>
+              </Link>
+                 
               <Link to='/profile' className='nav-link'>
                 <i ><UserOutlined /></i>
                 <span className='nav-link-name'>Profile</span>
@@ -111,6 +123,11 @@ const Sidebar = () => {
                 <Route path="/products" element={<Products />} />
                 <Route path="/suppliers" element={<Suppliers />} />
                 <Route path="/employees" element={<Employees />} />
+                <Route path="/employees/create" element={<CreateEmp />} />
+                <Route path="/employees/edit/:id" element={<EditEmp />} />
+                <Route path="/employees/types" element={<Types />} />
+                <Route path="/employees/types/create" element={<CreateType/>} />
+                <Route path="/employees/types/edit/:id" element={<EditType />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/categories/create" element={<Create />} />
                 {/* <Route path="/show/:id" element={<Show />} /> */}

@@ -10,7 +10,6 @@ import Categories from './components/categories/Categories';
 import Products from './components/products/Products';
 import Suppliers from './components/suppliers/Suppliers';
 import Profile from './components/Profile';
-import Employees from './components/Employees';
 import Sidebar from './components/Sidebar';
 import Create from './components/categories/Create';
 import Show from './components/categories/Show';
@@ -22,6 +21,12 @@ import ShowSupp from './components/suppliers/ShowSupp';
 import ShowProd from './components/products/ShowProd';
 import EditProd from './components/products/EditProd';
 import { Modal } from 'bootstrap';
+import Types from './components/employes/types/types';
+import Employees from './components/employes/Employees';
+import CreateEmp from './components/employes/CreateEmp';
+import EditEmp from './components/employes/EditEmp';
+import EditType from './components/employes/types/EditType';
+import CreateType from './components/employes/types/CreateType';
 
 function App() {
   return (
@@ -40,6 +45,11 @@ function App() {
                 <Route path="/products" element={<Products />} />
                 <Route path="/suppliers" element={<Suppliers />} />
                 <Route path="/employees" element={<Employees />} />
+                <Route path="/employees/create" element={<CreateEmp />} />
+                <Route path="/employees/edit/:id" element={<EditEmp />} />
+                <Route path="/employees/types" element={<Types />} />
+                <Route path="/employees/types/create" element={<CreateType/>} />
+                <Route path="/employees/types/edit/:id" element={<EditType />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/categories/create" element={<Create />} />
                 {/* <Route path="/show/:id" element={<Show />} /> */}
