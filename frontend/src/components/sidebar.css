@@ -97,7 +97,7 @@
     position: relative;
     color: var(--first-color-alt);
     transition: 0.5s;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.0rem;
   }
   
   .nav-link:hover {
@@ -156,3 +156,48 @@
     }
   }
   
+   /* navbar.css */
+
+.profile-link {
+  margin-left: 1rem;
+}
+
+.profile-link-content {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #000;
+}
+
+.profile-link-name {
+  display: none; /* Hide the name by default */
+}
+
+.profile-link-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+/* Show the name when screen width is at least 768px */
+@media screen and (min-width: 768px) {
+  .profile-link-name {
+    display: inline; /* Display the name */
+    margin-right: 0.5rem; /* Add some spacing */
+    color: #ae8b41;
+  }
+
+  .profile-link-image {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.panier{
+  color: #ae8b41;
+}
+
+.btnS{
+  background-color: #ae8b41;
+}

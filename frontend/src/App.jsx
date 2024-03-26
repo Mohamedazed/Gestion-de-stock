@@ -9,7 +9,6 @@ import Login from './components/Login';
 import Categories from './components/categories/Categories';
 import Products from './components/products/Products';
 import Suppliers from './components/suppliers/Suppliers';
-import Profile from './components/Profile';
 import Sidebar from './components/Sidebar';
 import Create from './components/categories/Create';
 import Show from './components/categories/Show';
@@ -27,6 +26,11 @@ import CreateEmp from './components/employes/CreateEmp';
 import EditEmp from './components/employes/EditEmp';
 import EditType from './components/employes/types/EditType';
 import CreateType from './components/employes/types/CreateType';
+import EditProfil from './components/profiles/EditProfil';
+import Profile from './components/profiles/Profile';
+import Purchases from './components/sales/Purchases';
+import Sales from './components/sales/Sales';
+import Panier from './components/sales/Panier';
 
 function App() {
   return (
@@ -47,10 +51,11 @@ function App() {
                 <Route path="/employees" element={<Employees />} />
                 <Route path="/employees/create" element={<CreateEmp />} />
                 <Route path="/employees/edit/:id" element={<EditEmp />} />
-                <Route path="/employees/types" element={<Types />} />
+                <Route path="/types" element={<Types />} />
                 <Route path="/employees/types/create" element={<CreateType/>} />
                 <Route path="/employees/types/edit/:id" element={<EditType />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/:id" element={<Profile/>} />
+                <Route path="/profile/edit/:id" element={<EditProfil />} />
                 <Route path="/categories/create" element={<Create />} />
                 {/* <Route path="/show/:id" element={<Show />} /> */}
                 <Route path="/show/:id" element={<Modal />} />
@@ -61,6 +66,9 @@ function App() {
                 <Route path='/suppliers/create' element={<CreateSupp/>}/>
                 <Route path="/suppliers/edit/:id" element={<EditSupp />} />
                 <Route path="/suppliers/show/:id" element={<ShowSupp/>} />
+                <Route path="/sales" element={<Sales />} />
+                <Route path="/panier" element={<Panier />} />
+                <Route path="/purchases" element={<Purchases />} />
               </Routes>
               </Sidebar >
             </div>

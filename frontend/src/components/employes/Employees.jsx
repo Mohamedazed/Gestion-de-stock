@@ -210,7 +210,7 @@ export default function Employees() {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const pageSize = 10;
+    const [pageSize, setPageSize] = useState(10);
 
     useEffect(() => {
         employeeCount();
@@ -314,7 +314,7 @@ export default function Employees() {
                     <hr />
                     <div className='d-flex justify-content-between'>
                         <h5>Total:</h5>
-                        <h5>{employeeTotal}</h5>
+                        <h5>{employeeTotal} <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-raised-hand" viewBox="0 0 16 16"><path d="M6 6.207v9.043a.75.75 0 0 0 1.5 0V10.5a.5.5 0 0 1 1 0v4.75a.75.75 0 0 0 1.5 0v-8.5a.25.25 0 1 1 .5 0v2.5a.75.75 0 0 0 1.5 0V6.5a3 3 0 0 0-3-3H6.236a1 1 0 0 1-.447-.106l-.33-.165A.83.83 0 0 1 5 2.488V.75a.75.75 0 0 0-1.5 0v2.083c0 .715.404 1.37 1.044 1.689L5.5 5c.32.32.5.754.5 1.207"/><path d="M8 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/></svg></h5>
                     </div>
                 </div>
 
@@ -335,7 +335,7 @@ export default function Employees() {
                     <hr />
                     <div className='d-flex justify-content-between'>
                         <h5>Total: </h5>
-                        <h5> {salaryTotal}DH</h5>
+                        <h5> {salaryTotal} <b>DH</b></h5>
                     </div>
                 </div>
             </div>
@@ -345,12 +345,11 @@ export default function Employees() {
                 <table className='table border'>
           <thead>
             <tr>
-              <th className='bg-warning-subtle'>
+              <th className='d-flex justify-content-between bg-warning-subtle'>
                 <div className="m-2">
                   <h2>List of Employees:</h2>
                 </div>
-              </th>
-              <th className='bg-warning-subtle'>
+              
                   <div className='m-2'>
                     <Link to="/employees/create" className="btn btn-warning ">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/></svg>   Add Employee
@@ -360,24 +359,33 @@ export default function Employees() {
             </tr>
           </thead>
           <tbody>
-            <tr className='bg-light'>
-            <h5 className='bg-light m-2'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg> Find Products</h5>
+            <tr className=' bg-light'>
               
-              <td style={{display : 'flex'}} className='bg-light m-2'>
-              <div>ID: <br/><input type="text" name="id" value={searchParams.id} onChange={handleChange} className='border rounded m-2'/></div>
-              <div>Name: <br/><input type="text" name="name" value={searchParams.name} onChange={handleChange} className='border rounded m-2'/></div>
-              <div>Salary: <br/><input type="text" name="salary" value={searchParams.salary} onChange={handleChange} className='border rounded m-2'/></div>
-              
-              </td>
-              <td className='bg-light'><br/><br/><br/>
-                <button className='btn btn-success' onClick={() => handleSearch()}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg>
+              <td  className='d-flex justify-content-between bg-light '>
+              {/* Name: <br/><input type="text" name="name" value={searchParams.name} onChange={handleChange} className='border rounded m-2 input-group-text bg-white rounded-pill'/>
+              <button className='btn btn-success' onClick={() => handleSearch()} style={{zIndex: 0}}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg>
                    Search
-                </button>
+                </button> */}
+                <h5 className='bg-light m-2'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg> Find Products</h5>
+            
+                <div className='w-35 me-4'>
+                <div className='input-group '>
+                  <input type="text" name="name" value={searchParams.name} class="form-control" onChange={handleChange} className='form-control rounded-start-pill border-end-0' placeholder='Search' />
+                  <span className='input-group-text bg-white border-start-0 '><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg></span>
+                  <button  onClick={() => handleSearch()} className='btn border btn-success ' style={{zIndex: 0}}>Search</button>
+                </div>
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
 
+        <div className="border p-2 bg-light mb-5 pb-0">
+        <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <p style={{ marginRight: '10px' }}>Show</p>
+          <input type='number' value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))} style={{ width: '60px', padding: '3px', marginRight: '10px',appearance: 'textfield',}}  className='mb-3'/>
+          <p style={{ marginLeft: '5px' }}> lines</p>
+        </div>
                 <table className="table table-striped table-hover border">
                     <thead>
                     <tr>
@@ -410,33 +418,60 @@ export default function Employees() {
                     </tbody>
                 </table>
                 <div className='d-flex justify-content-center'>
-        <nav aria-label='Page navigation example'>
-          <ul className='pagination'>
-            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-              <button
-                className='page-link'
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
-            </li>
-            <li className='page-item'>
-              <button className='page-link' disabled>
-                {currentPage}
-              </button>
-            </li>
-            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-              <button
-                className='page-link'
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </li>
-          </ul>
-        </nav>
+                  <nav aria-label='Page navigation example'>
+                    <ul className='pagination'>
+                      <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        <button
+                          className='page-link'
+                          onClick={handlePreviousPage}
+                          disabled={currentPage === 1}
+                        >
+                          Previous
+                        </button>
+                      </li>
+                      {totalPages <= 10 ? (
+                        // Display all page buttons if total pages are less than or equal to 10
+                        Array.from({ length: totalPages }, (_, index) => (
+                          <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                            <button
+                              className='page-link'
+                              onClick={() => setCurrentPage(index + 1)}
+                            >
+                              {index + 1}
+                            </button>
+                          </li>
+                        ))
+                      ) : (
+                        // Display up to 10 page buttons dynamically
+                        Array.from({ length: 10 }, (_, index) => {
+                          const page = index + 1 + (currentPage > 5 ? currentPage - 5 : 0);
+                          return (
+                            page <= totalPages && (
+                              <li key={index} className={`page-item ${currentPage === page ? 'active' : ''}`}>
+                                <button
+                                  className='page-link'
+                                  onClick={() => setCurrentPage(page)}
+                                >
+                                  {page}
+                                </button>
+                              </li>
+                            )
+                          );
+                        })
+                      )}
+                      <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button
+                          className='page-link'
+                          onClick={handleNextPage}
+                          disabled={currentPage === totalPages}
+                        >
+                          Next
+                        </button>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+
         </div>
         </div>
         </div>

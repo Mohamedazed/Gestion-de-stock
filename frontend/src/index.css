@@ -26,3 +26,35 @@
     margin-left: -30px;
     margin-top: 80px;
 }
+input[type='number']::-webkit-inner-spin-button, 
+input[type='number']::-webkit-outer-spin-button {
+  opacity: 1;
+  height: auto;
+}
+
+.pagination .page-link {
+    color: #ae8b41;
+    background-color: white; /* Set background color to white */
+    border-color: #ae8b41;
+  }
+  
+  .pagination .page-link:hover {
+    color: white;
+    background-color: #ae8b41;
+    border-color: #ae8b41;
+  }
+  
+  .pagination .page-item.active .page-link {
+    color: white;
+    background-color: #ae8b41;
+    border-color: #ae8b41;
+  }
+
+  .iconP {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    /* object-fit: cover; */
+  }
+
+ 

@@ -53,6 +53,7 @@ const verifyUser = (req, res, next)=>{
                 return res.json({Error: "Token is not okey"});
             }else{
                 req.name = decoded.name;
+                req.id = decoded.id;
                 next()
             }
         })
@@ -60,7 +61,7 @@ const verifyUser = (req, res, next)=>{
 }
 
 app.get('/', verifyUser, (req,res)=>{
-    return res.json({Status: "Success", name: req.name});
+    return res.json({Status: "Success", name: req.name, id:req.id});
 })
 
 app.post('/signup', (req, res) => {
@@ -110,6 +111,67 @@ app.get('/logout', (req,res)=>{
     res.clearCookie('token');
     return res.json({Status: "Success"});
 })
+
+///////////////profile
+
+// app.get('/profil/:name', (req, res) => {
+//     const name = req.params.name; // Use req.params to get the parameter from the URL
+//     const sql = "SELECT id FROM login WHERE name = ?";
+//     db.query(sql, [name], (err, result) => {
+//         if (err) {
+//             console.error('Error querying the database:', err);
+//             return res.json({ Status: false, Error: "Query Error" });
+//         }
+//         if (result.length === 0) {
+//             return res.json({ Status: false, Error: "User not found" });
+//         }
+//         // Assuming the result is an array with a single object containing the user ID
+//         const userId = result[0].id;
+//         return res.json({ Status: true, UserId: userId });
+//     });
+// });
+app.get('/profil/:name', (req, res) => {
+    const name = req.params.name; // Use req.params to get the parameter from the URL
+    const sql = "SELECT id, image FROM login WHERE name = ?";
+    db.query(sql, [name], (err, result) => {
+        if (err) {
+            console.error('Error querying the database:', err);
+            return res.json({ Status: false, Error: "Query Error" });
+        }
+        if (result.length === 0) {
+            return res.json({ Status: false, Error: "User not found" });
+        }
+        // Assuming the result is an array with a single object containing the user ID and image
+        const user = result[0];
+        const userId = user.id;
+        const image = user.image;
+        return res.json({ Status: true, UserId: userId, Image: image });
+    });
+});
+
+
+app.get('/profile/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = "SELECT * FROM login WHERE id = ?";
+    db.query(sql,[id], (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"})
+        return res.json({Status: true, Result: result})
+    })
+})
+
+app.put('/profile/edit/:id',uploadImage.single('image'), (req, res) => {
+    const id = req.params.id;
+    const { name } = req.body; 
+    let image = req.file ? req.file.filename : '';
+    const sql = `UPDATE login 
+        SET name = ?, image = ? 
+        WHERE id = ?`;
+    db.query(sql, [name, image, id], (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error" + err});
+        return res.json({Status: true, Result: result});
+    });
+});
+
 
 // //////////////categories
 
@@ -278,50 +340,6 @@ app.put('/products/edit/:id', verifyUser, (req, res) => {
         });
     });
 });
-// app.put('/products/edit/:id', verifyUser, uploadImage.single('productImage'), (req, res) => {
-//     const id = req.params.id;
-//     const values = [
-//         req.body.name,
-//         req.body.categorie,
-//         req.body.prix,
-//         req.body.quantite,
-//         req.body.supplier,
-//         id
-//     ];
-
-//     let updateProductSql;
-//     let sqlParams;
-
-//     if (req.file) {
-//         // If a new image is uploaded
-//         updateProductSql = "UPDATE products SET `name`=?, `categorie`=?, `prix`=?, `quantite`=?, `Code_Supplier`=?, `Product_Image`=? WHERE Code_Product = ?";
-//         sqlParams = [...values.slice(0, 4), req.file.path, ...values.slice(5)];
-//     } else {
-//         // If no new image is uploaded
-//         updateProductSql = "UPDATE products SET `name`=?, `categorie`=?, `prix`=?, `quantite`=?, `Code_Supplier`=? WHERE Code_Product = ?";
-//         sqlParams = [...values.slice(0, 4), ...values.slice(5)];
-//     }
-
-//     // Fetch the supplier's code based on the supplier's name
-//     const getSupplierCodeSql = "SELECT Code_Supplier FROM suppliers WHERE Name = ?";
-//     db.query(getSupplierCodeSql, [req.body.supplier], (err, supplierResult) => {
-//         if (err) return res.json({ Error: "Error fetching supplier code" });
-
-//         // Ensure that a supplier code is found
-//         if (supplierResult.length === 0) {
-//             return res.status(400).json({ Error: "Supplier not found" });
-//         }
-
-//         // Extract the supplier code from the result
-//         const supplierCode = supplierResult[0].Code_Supplier;
-
-//         // Update the product record with the new details
-//         db.query(updateProductSql, [...sqlParams.slice(0, 4), supplierCode, ...sqlParams.slice(5)], (err, result) => {
-//             if (err) return res.json({ Message: "Error updating product" });
-//             return res.json({ result });
-//         });
-//     });
-// });
 
 // Delete a product
 app.delete('/products/delete/:id', verifyUser, (req, res) => {
@@ -406,22 +424,6 @@ app.get('/suppliers/show/:id', verifyUser, (req, res) => {
     });
 });
 
-// app.put('/suppliers/edit/:id', verifyUser, (req, res) => {
-//     const sql = "UPDATE Suppliers SET `Name`=?, `Phone`=?, `Email`=?, `Adresse`=?, `Company`=? WHERE Code_Supplier = ?";
-//     const id = req.params.id;
-//     const values = [
-//         req.body.Name,
-//         req.body.Phone,
-//         req.body.Email,
-//         req.body.Adresse,
-//         req.body.Company,
-//         id
-//     ];
-//     db.query(sql, values, (err, result) => {
-//         if (err) return res.json({ Message: "Error updating supplier" });
-//         return res.json({ result });
-//     });
-// });
 
 app.put('/suppliers/edit/:id', verifyUser, uploadImage.single('image'), (req, res) => {
     const id = req.params.id;
