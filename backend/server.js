@@ -8,14 +8,13 @@ import multer from 'multer';
 import path from 'path';
 
 const salt = 10;
-// const upload = multer({ dest: 'uploads/' });
 
 const app = express();
 app.use(express.json());
 
 app.use(cors({
     origin: "http://localhost:5173",
-    methods: ["POST", "GET"],
+    methods: ["POST", "GET", "PUT", "DELETE"],
     credentials: true
 }));
 app.use(cookieParser());
@@ -114,22 +113,6 @@ app.get('/logout', (req,res)=>{
 
 ///////////////profile
 
-// app.get('/profil/:name', (req, res) => {
-//     const name = req.params.name; // Use req.params to get the parameter from the URL
-//     const sql = "SELECT id FROM login WHERE name = ?";
-//     db.query(sql, [name], (err, result) => {
-//         if (err) {
-//             console.error('Error querying the database:', err);
-//             return res.json({ Status: false, Error: "Query Error" });
-//         }
-//         if (result.length === 0) {
-//             return res.json({ Status: false, Error: "User not found" });
-//         }
-//         // Assuming the result is an array with a single object containing the user ID
-//         const userId = result[0].id;
-//         return res.json({ Status: true, UserId: userId });
-//     });
-// });
 app.get('/profil/:name', (req, res) => {
     const name = req.params.name; // Use req.params to get the parameter from the URL
     const sql = "SELECT id, image FROM login WHERE name = ?";
@@ -258,6 +241,38 @@ app.get('/products',verifyUser, (req, res) => {
 });
 
 // Create a new product
+// app.post('/products/create', uploadImage.single('productImage'), (req, res) => {
+//     const { name, category, price, quantity, supplier } = req.body;
+//     const productImage = req.file.path; // Path to the uploaded file
+
+//     // Fetch the code_supplier based on the supplier's name
+//     const getSupplierCodeSql = "SELECT Code_Supplier FROM suppliers WHERE Name = ?";
+//     db.query(getSupplierCodeSql, [supplier], (err, result) => {
+//         if (err) {
+//             console.error('Error fetching supplier code:', err);
+//             return res.status(500).json({ error: 'Error creating product' });
+//         }
+        
+//         // Check if the supplier exists
+//         if (result.length === 0) {
+//             return res.status(400).json({ error: 'Supplier not found' });
+//         }
+
+//         const codeSupplier = result[0].Code_Supplier;
+
+//         // Insert the product into the database
+//         const insertProductSql = "INSERT INTO products (`name`, `categorie`, `prix`, `quantite`, `code_supplier`, `date_ajout`, `product_image`) VALUES (?, ?, ?, ?, ?, NOW(), ?)";
+//         const values = [name, category, price, quantity, codeSupplier, productImage];
+
+//         db.query(insertProductSql, values, (err, result) => {
+//             if (err) {
+//                 console.error('Error creating product:', err);
+//                 return res.status(500).json({ error: 'Error creating product' });
+//             }
+//             return res.status(200).json({ message: 'Product created successfully' });
+//         });
+//     });
+// });
 app.post('/products/create', uploadImage.single('productImage'), (req, res) => {
     const { name, category, price, quantity, supplier } = req.body;
     const productImage = req.file.path; // Path to the uploaded file
@@ -286,10 +301,22 @@ app.post('/products/create', uploadImage.single('productImage'), (req, res) => {
                 console.error('Error creating product:', err);
                 return res.status(500).json({ error: 'Error creating product' });
             }
-            return res.status(200).json({ message: 'Product created successfully' });
+
+            // Insert a new record into the purchases table
+            const insertPurchaseSql = "INSERT INTO purchases (Code_Product, Categorie, Prix, Quantite, Date_Ajout, Code_Supplier, Product_Image, name, prix_sale, supplier) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?)";
+            const purchaseValues = [result.insertId, category, price, quantity, codeSupplier, productImage, name, price, supplier];
+
+            db.query(insertPurchaseSql, purchaseValues, (err, purchaseResult) => {
+                if (err) {
+                    console.error('Error creating purchase:', err);
+                    return res.status(500).json({ error: 'Error creating purchase' });
+                }
+                return res.status(200).json({ message: 'Product and purchase created successfully' });
+            });
         });
     });
 });
+
 
 
 // Get a specific product by ID
@@ -387,6 +414,14 @@ app.get('/products/search', verifyUser, (req, res) => {
         return res.json({ result });
     });
 });
+
+app.get('/prod_count', (req, res) => {
+    const sql = "select count(Code_Product) as nbSupp from products";
+    db.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
 
 ////////////////suppliers
 // Route to get all suppliers
@@ -550,6 +585,14 @@ app.get('/employes/:id', verifyUser, (req, res) => {
     });
 });
 
+app.delete('/employes/delete/:id', verifyUser, (req, res) => {
+    const sql = "DELETE FROM employes WHERE Code_Employee = ?";
+    const id = req.params.id;
+    db.query(sql, [id], (err, result) => {
+        if(err) return res.json({ Message: "Error inside server" });
+        return res.json({ result });
+    });
+});
 
 app.get('/employees/search', (req, res) => {
     const { code, name , salary} = req.query;
@@ -574,6 +617,14 @@ app.get('/employees/search', (req, res) => {
     });
 });
 
+app.get('/emp_count', (req, res) => {
+    const sql = "select count(Code_Employee) as nbSupp from Employes";
+    db.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
+
 ////////////////types
 // Route to get all types
 app.get('/employees/types', (req, res) => {
@@ -584,7 +635,7 @@ app.get('/employees/types', (req, res) => {
     });
 });
 
-app.delete('/employes/types/delete/:id', verifyUser, (req, res) => {
+app.delete('/types/delete/:id', verifyUser, (req, res) => {
     const sql = "DELETE FROM types WHERE id = ?";
     const id = req.params.id;
     db.query(sql, [id], (err, result) => {
@@ -650,7 +701,172 @@ app.get('/types_count', (req, res) => {
         return res.json({Status: true, Result: result})
     })
 })
+//////////////carts
 
+app.get('/cart', (req, res) => {
+    const sql = "SELECT * FROM cart";
+    db.query(sql, (err, result) => {
+        if (err) return res.json({ Message: "Error inside server" });
+        return res.json({ result });
+    });
+});
+
+// Route to add a product to the cart
+app.post('/cart/add', uploadImage.single('image'), verifyUser, (req, res) => {
+    const { name, product_id, price, quantity, created_at,image } = req.body;
+    // const imagePath = req.file ? req.file.path : null;
+    // Check if the product ID and quantity are provided
+    if (!product_id || !quantity) {
+        return res.status(400).json({ error: 'Product ID, quantity are required' });
+    }
+
+    // Check if the product exists
+    const getProductSql = "SELECT * FROM products WHERE Code_Product = ?";
+    db.query(getProductSql, [product_id], (err, productResult) => {
+        if (err) {
+            console.error('Error fetching product:', err);
+            return res.status(500).json({ error: 'Error adding product to cart' });
+        }
+
+        // Check if the product exists in the database
+        if (productResult.length === 0) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        const product = productResult[0];
+        const availableQuantity = product.quantite;
+
+        // Check if the requested quantity exceeds the available quantity
+        if (quantity > availableQuantity) {
+            return res.status(400).json({ error: 'Requested quantity exceeds available quantity' });
+        }
+        
+        // Insert the product into the cart table
+        const insertCartSql = "INSERT INTO cart ( `name`, `product_id`, `price`, `quantity`, `created_at`, `image`) VALUES (?, ?, ?, ?,? , ?)";
+        db.query(insertCartSql, [ name, product_id, price, quantity, created_at, image], (err, result) => {
+            if (err) {
+                console.error('Error adding product to cart:', err);
+                return res.status(500).json({ error: 'Error adding product to cart' });
+            }
+            return res.status(200).json({ message: 'Product added to cart successfully' });
+        });
+    });
+});
+
+app.delete('/cart/delete/:id', verifyUser, (req, res) => {
+    const sql = "DELETE FROM cart WHERE id = ?";
+    const id = req.params.id;
+    db.query(sql, [id], (err, result) => {
+        if(err) return res.json({ Message: "Error inside server" });
+        return res.json({ result });
+    });
+});
+
+/////////////sales
+
+app.get('/sale', (req, res) => {
+    const sql = "SELECT * FROM sales";
+    db.query(sql, (err, result) => {
+        if (err) return res.json({ Message: "Error inside server" });
+        return res.json({ result });
+    });
+});
+
+app.post('/sales', (req, res) => {
+    const cartItems = req.body;
+  
+    // Calculate total price for each product
+    cartItems.forEach(item => {
+        item.totalPrice = item.quantity * item.price;
+    });
+    // Loop through each cart item
+    cartItems.forEach(item => {
+      const { product_id, name, price, quantity, totalPrice } = item;
+      const sale_date = new Date().toISOString();
+  
+      // Insert a new record into the sales table
+      db.query('INSERT INTO sales (product_id, name, price, quantity, total_price, sale_date) VALUES (?, ?, ?, ?, ?, ?)', [product_id, name, price, quantity, totalPrice, sale_date], (error, result) => {
+        if (error) {
+          console.error('Error confirming product:', error);
+          return res.status(500).json({ error: 'Error confirming product' });
+        }
+  
+        // Update product quantity in the products table
+        db.query('UPDATE products SET Quantite = Quantite - ? WHERE Code_Product = ?', [quantity, product_id], (error, result) => {
+          if (error) {
+            console.error('Error updating product quantity:', error);
+            return res.status(500).json({ error: 'Error updating product quantity' });
+          }
+  
+          // Delete the product from the cart
+          db.query('DELETE FROM cart WHERE product_id = ?', [product_id], (error, result) => {
+            if (error) {
+              console.error('Error deleting product from cart:', error);
+              return res.status(500).json({ error: 'Error deleting product from cart' });
+            }
+          });
+        });
+      });
+    });
+  
+    res.status(200).json({ message: 'Products confirmed successfully' });
+  });
+
+  app.get('/sales/search', (req, res) => {
+    const { name } = req.query;
+    let sql = "SELECT * FROM sales WHERE 1";
+
+    if (name) {
+        sql += ` AND name LIKE '%${name}%'`;
+    }
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.error("Error searching for sales:", err);
+            return res.status(500).json({ Status: false, Error: "Error searching for sales" });
+        }
+        return res.json({ Status: true, result });
+    });
+});
+
+app.get('/sales_count', (req, res) => {
+    const sql = "select count(id) as nbSupp from sales";
+    db.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
+////////////////purchases
+app.get('/purchases',verifyUser, (req, res) => {
+    const sql = "SELECT * FROM purchases";
+    db.query(sql, (err, result) => {
+        if(err) return res.json({ Message: "Error inside server" });
+        return res.json({ result });
+    });
+});
+
+app.get('/purchases/search', verifyUser, (req, res) => {
+    const { name } = req.query;
+    let sql = "SELECT * FROM purchases WHERE 1";
+
+    if (name) {
+        sql += ` AND name LIKE '%${name}%'`;
+    }
+
+    db.query(sql, (err, result) => {
+        if (err) return res.status(500).json({ Error: 'Error searching for products' });
+        return res.json({ result });
+    });
+});
+
+app.get('/purch_count', (req, res) => {
+    const sql = "select count(Code_Product) as nbSupp from purchases";
+    db.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
+  
 // Export the Express app
 export default app;
 //////////////

@@ -1,8 +1,55 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import Products from './../products/Products';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Receipt from './Receipt';
 
 export default function Panier() {
+  const [cartItems, setCartItems] = useState([]);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [refreshPanier, setRefreshPanier] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchCartItems();
+  }, [refreshPanier]);
+
+  const fetchCartItems = () => {
+    axios.get('http://localhost:8081/cart')
+      .then(result => { 
+        setCartItems(result.data.result);
+      })
+      .catch(error => {
+        console.log('Error fetching cart items:', error);
+      });
+  };
+
+  const handleDelete = (id) => {
+    axios.delete(`http://localhost:8081/cart/delete/${id}`)
+      .then(() => {
+        setCartItems(prevCartItems => prevCartItems.filter((cart) => cart.id !== id));
+      })
+      .catch((err) => console.log(err));
+  };  
+
+  const handleConfirm = () => {
+    axios.post('http://localhost:8081/sales', cartItems)
+      .then(response => {
+        console.log('Products confirmed:', response.data);
+        // fetchCartItems(); 
+        setConfirmed(true); 
+        setShowReceiptModal(true);
+      })
+      .catch(error => {
+        console.log('Error confirming products:', error);
+      });
+  };
+
+  const handleCloseReceiptModal = () => {
+    setShowReceiptModal(false);
+    setRefreshPanier(prev => !prev);
+  };
+
   return (
     <div className='container'>
       <div style={{ marginTop: '70px' }}>
@@ -12,22 +59,275 @@ export default function Panier() {
           / <span style={{ color: 'gray' }}>Panier</span>
         </p>
       </div>
-      <div className='row'>
-        <div className='col-sm-6'>
-          <h4>Panier</h4><hr/>
+
+      <div className='row ms-1 mb-4'>
+        <div className='col-7 border shadow p-3 '>
+          <div className='d-flex justify-content-between'>
+            <h4 style={{color: 'brown'}}><b>Panier</b></h4>
+            <span className='mt-1'><Link className='save' to='/products'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="mb-1 bi bi-cart-plus-fill" viewBox="0 0 16 16"><path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M9 5.5V7h1.5a.5.5 0 0 1 0 1H9v1.5a.5.5 0 0 1-1 0V8H6.5a.5.5 0 0 1 0-1H8V5.5a.5.5 0 0 1 1 0"/></svg> Buy Product</Link></span>
+          </div><hr/>
           <div>
-            // add her the image and name and price of product previos adding in panier and 
+            {cartItems.map(item => (
+              <div key={item.id} className='row'>
+                <img src={`http://localhost:8081/${item.image}`} alt={item.name} style={{ width: '130px', height: '100px' }} className='col-sm-6 mb-2 rounded-circle'/>
+                <div className='col-sm-6 mt-3'>
+                  <div className='d-flex justify-content-between '>
+                    <h4><b>{item.name}</b></h4>
+                    <h5 className=' mt-1' style={{marginRight: '-50%' ,color: 'gold'}}><b>{item.price} DH</b></h5>
+                  </div>
+                  <div className='d-flex justify-content-between '>
+                    <p style={{ color: 'gray' }}> Quantity for sale: {item.quantity} pieces</p>
+                    <button className='btn bg-danger-subtle rounded-pill mt-1' onClick={() => handleDelete(item.id)} style={{marginRight: '-52%'}}>Delete <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg></button>
+                  </div>
+                </div>
+                <hr />
+              </div>
+            ))}
           </div>
         </div>
-        <div className='col-sm-4'>
-          <h4>Estimate</h4><hr/>
+        
+        <div className='col-4 boder shadow p-3 ms-5'>
+          <h4 style={{color: 'brown'}}><b>Estimate</b><hr/></h4>
           <div>
-            // add her the number of pieces user want to by this Products
-            // and total : price DH
-            // button confirmed when user click this button redirect it to impreme recu d'achat
+            <div className='d-flex justify-content-between mt-4'><p style={{ color: 'gray' }}>Total:</p> <p>{cartItems.length} Products</p></div><hr/>
+            <h4 className='d-flex justify-content-between'><p style={{ color: 'gray' }}>Total Price: </p> <p><b>{cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)} DH</b></p></h4>
+              {cartItems.length === 0 ? (
+                <button className="btn bg-primary-subtle shadow w-100 btn-lg rounded-pill" disabled>Confirm</button>
+              ) : (
+                <>
+                  {confirmed ? (
+                    <>
+                      {showReceiptModal && <Receipt products={cartItems} onClose={handleCloseReceiptModal} />}
+                      <button className="btn bg-primary-subtle shadow w-100 btn-lg rounded-pill" onClick={() => window.print()}>Print</button>
+                    </>
+                  ) : (
+                    <button className="btn bg-primary-subtle shadow w-100 btn-lg rounded-pill" onClick={handleConfirm}>Confirm</button>
+                  )}
+                </>
+              )}
+
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
+
+
+// import React, { useState, useEffect } from 'react';
+// import { Link, useNavigate } from 'react-router-dom';
+// import axios from 'axios';
+// import Receipt from './Receipt';
+
+// export default function Panier() {
+//   const [cartItems, setCartItems] = useState([]);
+//   const [confirmed, setConfirmed] = useState(false);
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     fetchCartItems();
+//   }, []);
+
+//   const fetchCartItems = () => {
+//     axios.get('http://localhost:8081/cart')
+//       .then(result => { 
+//         setCartItems(result.data.result);
+//       })
+//       .catch(error => {
+//         console.log('Error fetching cart items:', error);
+//       });
+//   };
+
+//   const handleDelete = (id) => {
+//     axios.delete(`http://localhost:8081/cart/delete/${id}`)
+//       .then(() => {
+//         setCartItems(prevCartItems => prevCartItems.filter(cart => cart.id !== id));
+//       })
+//       .catch(err => {
+//         console.log(err);
+//       });
+//   };  
+
+//   const handleConfirm = () => {
+//     axios.post('http://localhost:8081/sales', cartItems)
+//       .then(response => {
+//         console.log('Products confirmed:', response.data);
+//         // fetchCartItems();
+//         setConfirmed(true);
+//         // navigate('/receipt');
+//       })
+//       .catch(error => {
+//         console.log('Error confirming products:', error);
+//       });
+//   };
+
+//   const handlePrint = () => {
+//     window.print(); 
+//   };
+
+//   return (
+//     <div className='container'>
+//       <div style={{ marginTop: '70px' }}>
+//         <h3>Panier</h3>
+//         <p>
+//           <span><Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>Dashboard</Link></span>
+//           / <span style={{ color: 'gray' }}>Panier</span>
+//         </p>
+//       </div>
+//       <div className='row ms-1 mb-4'>
+        
+//         <div className='col-7 border shadow p-3 '>
+//           <div className='d-flex justify-content-between'>
+//             <h4 style={{color: 'brown'}}><b>Panier</b></h4>
+//             <span className='mt-1'><Link className='save' to='/products'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="mb-1 bi bi-cart-plus-fill" viewBox="0 0 16 16"><path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M9 5.5V7h1.5a.5.5 0 0 1 0 1H9v1.5a.5.5 0 0 1-1 0V8H6.5a.5.5 0 0 1 0-1H8V5.5a.5.5 0 0 1 1 0"/></svg> Buy Product</Link></span>
+//           </div><hr/>
+//           <div>
+//             {cartItems.map(item => (
+//               <div key={item.id} className='row'>
+//                 <img src={`http://localhost:8081/${item.image}`} alt={item.name} style={{ width: '130px', height: '100px' }} className='col-sm-6 mb-2 rounded-circle'/>
+//                 <div className='col-sm-6 mt-3'>
+//                   <div className='d-flex justify-content-between '>
+//                     <h4><b>{item.name}</b></h4>
+//                     <h5 className=' mt-1' style={{marginRight: '-50%' ,color: 'gold'}}><b>{item.price} DH</b></h5>
+//                   </div>
+//                   <div className='d-flex justify-content-between '>
+//                     <p style={{ color: 'gray' }}> Quantity for sale: {item.quantity} pieces</p>
+//                     <button className='btn bg-danger-subtle rounded-pill mt-1' onClick={() => handleDelete(item.id)} style={{marginRight: '-52%'}}>Delete <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg></button>
+//                   </div>
+//                 </div>
+//                 <hr />
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+        
+//         <div className='col-4 boder shadow p-3 ms-5'>
+//           <h4 style={{color: 'brown'}}><b>Estimate</b><hr/></h4>
+//           <div>
+//             <div className='d-flex justify-content-between mt-4'><p style={{ color: 'gray' }}>Total:</p> <p>{cartItems.length} Products</p></div><hr/>
+//             <h4 className='d-flex justify-content-between'><p style={{ color: 'gray' }}>Total Price: </p> <p><b>{cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)} DH</b></p></h4>
+//             {confirmed ? (
+              
+//               <Receipt products={cartItems} />
+              
+//             ) : (
+//               <button className="btn bg-primary-subtle shadow w-100 btn-lg rounded-pill" onClick={handleConfirm}>Confirm</button>
+//             )}
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// import React, { useState, useEffect } from 'react';
+// import { Link } from 'react-router-dom';
+// import axios from 'axios';
+// import Receipt from './Receipt';
+
+// const Panier = () => {
+//     const [cartItems, setCartItems] = useState([]);
+//     const [confirmed, setConfirmed] = useState(false);
+
+//     useEffect(() => {
+//         fetchCartItems();
+//     }, []);
+
+//     const fetchCartItems = () => {
+//         axios.get('http://localhost:8081/cart')
+//             .then(result => { 
+//                 setCartItems(result.data.result);
+//             })
+//             .catch(error => {
+//                 console.log('Error fetching cart items:', error);
+//             });
+//     };
+
+//     const handleDelete = (id) => {
+//         axios.delete(`http://localhost:8081/cart/delete/${id}`)
+//             .then(() => {
+//                 setCartItems(prevCartItems => prevCartItems.filter(cart => cart.id !== id));
+//             })
+//             .catch(err => {
+//                 console.log(err);
+//             });
+//     };  
+
+//     const handleConfirm = () => {
+//         axios.post('http://localhost:8081/sales', cartItems)
+//             .then(response => {
+//                 console.log('Products confirmed:', response.data);
+//                 setConfirmed(true);
+//             })
+//             .catch(error => {
+//                 console.log('Error confirming products:', error);
+//             });
+//     };
+
+//     const handlePrint = () => {
+//         window.print(); 
+//     };
+
+//     return (
+//         <div className='container'>
+//             <div style={{ marginTop: '70px' }}>
+//                 <h3>Panier</h3>
+//                 <p>
+//                     <span><Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>Dashboard</Link></span>
+//                     / <span style={{ color: 'gray' }}>Panier</span>
+//                 </p>
+//             </div>
+//             <div className='row ms-1 mb-4'>
+//                 <div className='col-7 border shadow p-3 '>
+//                     <div className='d-flex justify-content-between'>
+//                         <h4 style={{color: 'brown'}}><b>Panier</b></h4>
+//                         <span className='mt-1'><Link className='save' to='/products'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="mb-1 bi bi-cart-plus-fill" viewBox="0 0 16 16"><path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M9 5.5V7h1.5a.5.5 0 0 1 0 1H9v1.5a.5.5 0 0 1-1 0V8H6.5a.5.5 0 0 1 0-1H8V5.5a.5.5 0 0 1 1 0"/></svg> Buy Product</Link></span>
+//                     </div>
+//                     <hr/>
+//                     <div>
+//                         {cartItems.map(item => (
+//                             <div key={item.id} className='row'>
+//                                 <img src={`http://localhost:8081/${item.image}`} alt={item.name} style={{ width: '130px', height: '100px' }} className='col-sm-6 mb-2 rounded-circle'/>
+//                                 <div className='col-sm-6 mt-3'>
+//                                     <div className='d-flex justify-content-between '>
+//                                         <h4><b>{item.name}</b></h4>
+//                                         <h5 className=' mt-1' style={{marginRight: '-50%' ,color: 'gold'}}><b>{item.price} DH</b></h5>
+//                                     </div>
+//                                     <div className='d-flex justify-content-between '>
+//                                         <p style={{ color: 'gray' }}> Quantity for sale: {item.quantity} pieces</p>
+//                                         <button className='btn bg-danger-subtle rounded-pill mt-1' onClick={() => handleDelete(item.id)} style={{marginRight: '-52%'}}>Delete <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg></button>
+//                                     </div>
+//                                 </div>
+//                                 <hr />
+//                             </div>
+//                         ))}
+//                     </div>
+//                 </div>
+//                 <div className='col-4 border shadow p-3 ms-5'>
+//                     <h4 style={{color: 'brown'}}><b>Estimate</b><hr/></h4>
+//                     <div>
+//                         <div className='d-flex justify-content-between mt-4'>
+//                             <p style={{ color: 'gray' }}>Total:</p> 
+//                             <p>{cartItems.length} Products</p>
+//                         </div>
+//                         <hr/>
+//                         <h4 className='d-flex justify-content-between'>
+//                             <p style={{ color: 'gray' }}>Total Price: </p> 
+//                             <p><b>{cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)} DH</b></p>
+//                         </h4>
+//                         {confirmed ? (
+//                             <>
+//                               <Receipt  products={cartItems} />
+//                               <button className="btn bg-primary-subtle shadow w-100 btn-lg rounded-pill" onClick={() => window.print()}>Print</button>
+//                             </>
+//                         ) : (
+//                             <button className="btn bg-primary-subtle shadow w-100 btn-lg rounded-pill" onClick={handleConfirm}>Confirm</button>
+//                         )}
+//                     </div>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// }
+
+// export default Panier;

@@ -11,7 +11,8 @@
 //     Phone: '',
 //     Email: '',
 //     Adresse: '',
-//     Company: ''
+//     Company: '',
+//     image: null
 //   });
 //   const navigate = useNavigate();
 
@@ -24,7 +25,8 @@
 //             Phone: res.data.result[0].Phone,
 //             Email: res.data.result[0].Email,
 //             Adresse: res.data.result[0].Adresse,
-//             Company: res.data.result[0].Company
+//             Company: res.data.result[0].Company,
+//             image: res.data.result[0].image
 //           });
 //         } else {
 //           console.error('Invalid data structure in response:', res.data);
@@ -43,9 +45,25 @@
 //     }));
 //   };
 
+//   const handleFileChange = (e) => {
+//     const file = e.target.files[0];
+//     setSupplier(prevState => ({
+//         ...prevState,
+//         image: file
+//     }));
+//   };
+  
 //   const handleSubmit = (e) => {
 //     e.preventDefault();
-//     axios.put(`http://localhost:8081/suppliers/edit/${id}`, supplier)
+//     const formData = new FormData();
+//     formData.append('Name', supplier.Name);
+//     formData.append('Phone', supplier.Phone);
+//     formData.append('Email', supplier.Email);
+//     formData.append('Adresse', supplier.Adresse);
+//     formData.append('Company', supplier.Company);
+//     formData.append('image', supplier.image);
+
+//     axios.put(`http://localhost:8081/suppliers/edit/${id}`, formData)
 //       .then(res => {
 //         console.log(res.data);
 //         navigate('/suppliers');
@@ -54,57 +72,19 @@
 //         console.log(err);
 //       });
 //   };
-
 //   return (
 //     <div className="container" >
-//         {/* <div>
-//         <h3 style={{ marginTop: '70px' }}>Edit Supplier</h3>
-//         <p>
-//           <span><Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>Dashboard </Link></span>
-//           / <span><Link to="/suppliers" style={{ textDecoration: 'none', color: 'inherit' }}>suppliers </Link></span>
-//           / <span style={{ color: 'gray' }}>Edit supplier</span>
-//         </p>
-//       </div> 
-
-//       <h3>Edit Supplier</h3> */}
+        
 //       <Suppliers/>
-//       <EditSuppModal isOpen={true} supplier={supplier} handleChange={handleChange} handleSubmit={handleSubmit} />
-//       {/* {supplier !== null ? (
-//       <form onSubmit={handleSubmit}>
-//         <div className="form-group">
-//           <label>Name:</label>
-//           <input type="text" name="Name" value={supplier.Name} onChange={handleChange} className="form-control" />
-//         </div>
-//         <div className="form-group">
-//           <label>Phone:</label>
-//           <input type="text" name="Phone" value={supplier.Phone} onChange={handleChange} className="form-control" />
-//         </div>
-//         <div className="form-group">
-//           <label>Email:</label>
-//           <input type="email" name="Email" value={supplier.Email} onChange={handleChange} className="form-control" />
-//         </div>
-//         <div className="form-group">
-//           <label>Adresse:</label>
-//           <input type="text" name="Adresse" value={supplier.Adresse} onChange={handleChange} className="form-control" />
-//         </div>
-//         <div className="form-group">
-//           <label>Company:</label>
-//           <input type="text" name="Company" value={supplier.Company} onChange={handleChange} className="form-control" />
-//         </div>
-//         <button type="submit" className="btn btn-primary">Save Changes</button>
-//         <Link to={`/suppliers`} className="btn btn-secondary ms-2">Cancel</Link>
-//       </form>
-//        ) : (
-//         <p>No data available for this supplier.</p>
-//       )}*/}
+//       <EditSuppModal isOpen={true} supplier={supplier} handleChange={handleChange} handleFileChange={handleFileChange} handleSubmit={handleSubmit} />
+     
 //     </div> 
 //   );
 // };
-
 // export default EditSupp;
 
 import React, { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import EditSuppModal from './ModalsSupp/EditSuppModal';
 import Suppliers from './Suppliers';
@@ -117,7 +97,8 @@ const EditSupp = () => {
     Email: '',
     Adresse: '',
     Company: '',
-    image: null
+    image: null,
+    imageChanged: false
   });
   const navigate = useNavigate();
 
@@ -131,7 +112,8 @@ const EditSupp = () => {
             Email: res.data.result[0].Email,
             Adresse: res.data.result[0].Adresse,
             Company: res.data.result[0].Company,
-            image: res.data.result[0].image
+            image: res.data.result[0].image,
+            imageChanged: false
           });
         } else {
           console.error('Invalid data structure in response:', res.data);
@@ -150,11 +132,11 @@ const EditSupp = () => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = (acceptedFiles) => {
     setSupplier(prevState => ({
-        ...prevState,
-        image: file
+      ...prevState,
+      image: acceptedFiles[0],
+      imageChanged: true
     }));
   };
 
@@ -166,7 +148,8 @@ const EditSupp = () => {
     formData.append('Email', supplier.Email);
     formData.append('Adresse', supplier.Adresse);
     formData.append('Company', supplier.Company);
-    formData.append('image', supplier.image); // Append the image file
+    formData.append('image', supplier.image);
+
     axios.put(`http://localhost:8081/suppliers/edit/${id}`, formData)
       .then(res => {
         console.log(res.data);
@@ -178,12 +161,10 @@ const EditSupp = () => {
   };
 
   return (
-    <div className="container" >
-        
-      <Suppliers/>
+    <div className="container">
+      <Suppliers />
       <EditSuppModal isOpen={true} supplier={supplier} handleChange={handleChange} handleFileChange={handleFileChange} handleSubmit={handleSubmit} />
-     
-    </div> 
+    </div>
   );
 };
 

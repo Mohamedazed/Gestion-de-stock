@@ -57,4 +57,45 @@ input[type='number']::-webkit-outer-spin-button {
     /* object-fit: cover; */
   }
 
- 
+
+  .save{
+  position: relative;
+  color: #000000;
+  letter-spacing: 1px;
+  margin: 20px;
+  font-size: 16px;
+  padding: 10px;
+  text-align: center;
+  transition: 0.5s;
+  border-radius: 10px;
+  cursor: pointer;
+  border-radius: 25px;
+  border: none;
+  background: rgb(207, 152, 22);
+  font-weight: 600;
+  left: -20px;
+  /* text-transform: uppercase; */
+  letter-spacing: 1px;
+  width: 20px;
+  box-shadow: 10px 0px 5px 0px  #ecbf6d;
+  
+}
+.save:hover{
+  left: 0;
+  color: #fff;
+  width: 180px;
+  box-shadow: 0px 0px 10px 0px  #ecbf6d;
+}
+.save:focus{
+  outline: none;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .modal-body,
+  .modal-body * {
+    visibility: visible;
+  }
+}

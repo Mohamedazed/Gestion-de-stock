@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import ShowSuppModal from './ModalsSupp/ShowSuppModal';
 import EditSuppModal from './ModalsSupp/EditSuppModal';
+import ConfirmModalS from './ConfirmModalS';
 
 export default function Suppliers() {
   const [data, setData] = useState([]);
@@ -18,6 +19,7 @@ export default function Suppliers() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const fetchData = () => {
     const queryParams = {
@@ -26,7 +28,7 @@ export default function Suppliers() {
       pageSize: pageSize,
     };
     axios.get('http://localhost:8081/suppliers', { params: queryParams })
-      .then(result => {console.log('API Response:', result.data); 
+      .then(result => {
         setData(result.data.result || [])
         setTotalPages(Math.ceil(result.data.result.length / pageSize));
         
@@ -34,12 +36,27 @@ export default function Suppliers() {
       .catch(err => console.log(err));
   }
 
+  // const handleDelete = async (id) => {
+  //   try {
+  //     await axios.delete(`http://localhost:8081/suppliers/delete/${id}`);
+  //     setData(prevData => prevData.filter(s => s.id !== id));
+  //   } catch (error) {
+  //     console.error('Error deleting supplier:', error);
+  //   }
+  // };
   const handleDelete = async (id) => {
+    setSelectedSupplier(id);
+    setModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
     try {
-      await axios.delete(`http://localhost:8081/suppliers/delete/${id}`);
-      setData(prevData => prevData.filter(s => s.id !== id));
+      await axios.delete(`http://localhost:8081/suppliers/delete/${selectedSupplier}`);
+      setData(prevData => prevData.filter(prod => prod.id !== selectedSupplier));
     } catch (error) {
       console.error('Error deleting supplier:', error);
+    } finally {
+      setModalOpen(false);
     }
   };
 
@@ -134,6 +151,8 @@ export default function Suppliers() {
             handleSubmit={handleSubmit} 
           />
         )}
+        <ConfirmModalS isOpen={isModalOpen} onClose={() => setModalOpen(false)} onConfirm={handleConfirmDelete} />
+
       <div>
         <table className='table border border-warning'>
           <thead>
@@ -180,7 +199,7 @@ export default function Suppliers() {
           <p>Total : {Total} Supplier</p>
         </div>
         </div>
-        <table className="table table-striped table-hover border">
+        <table className="table table-striped table-hover border text-center">
           <thead>
             <tr>
               <th className='bg-warning-subtle'>Code</th>

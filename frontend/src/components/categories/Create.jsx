@@ -35,9 +35,9 @@ export default function Create() {
             </p>
           </div>
     
-          <div>
-            <div className="w-50 rounded p-3">
-              <h2>Create a New Category:</h2>
+          <div className='mt-3'>
+            <div className="w-50 rounded p-3 border bg-light w-50 shadow-sm">
+              <h4 className='text-center'>Create a New Category:</h4>
               <form>
 
                 <div className="mb-3">
@@ -46,7 +46,7 @@ export default function Create() {
                   </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control rounded-pill"
                     id="categoryName"
                     value={categoryName}
                     onChange={(e) => setCategoryName(e.target.value)}
@@ -54,15 +54,15 @@ export default function Create() {
                 </div>
 
                 <div className="d-flex justify-content-between">
-                  <Link to="/categories" className="btn btn-secondary">
+                  <Link to="/categories" className="btn border border-success text-success rounded-pill">
                     Cancel
                   </Link>
                   <button
                     type="button"
-                    className="btn btn-success"
+                    className="btn btn-success rounded-pill"
                     onClick={handleCreate}
                   >
-                    Create Category
+                    Create
                   </button>
                 </div>
 

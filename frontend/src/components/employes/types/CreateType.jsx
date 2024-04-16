@@ -15,7 +15,7 @@ export default function CreateType() {
         })
         .then(res => {
             console.log(res)
-            navigate('/employees/types')
+            navigate('/types')
         })
         .catch(err => {console.log(err)});
     };

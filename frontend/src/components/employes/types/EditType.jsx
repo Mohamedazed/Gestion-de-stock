@@ -131,7 +131,7 @@ const EditType = () => {
     axios.put(`http://localhost:8081/employees/types/edit/${id}`, values)
       .then((res) => {
         console.log(res.data);
-        navigate('/employees/types'); 
+        navigate('/types'); 
       })
       .catch(err => {
         console.log(err);

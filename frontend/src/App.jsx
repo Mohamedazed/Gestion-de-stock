@@ -31,13 +31,16 @@ import Profile from './components/profiles/Profile';
 import Purchases from './components/sales/Purchases';
 import Sales from './components/sales/Sales';
 import Panier from './components/sales/Panier';
+import Receipt from './components/sales/Receipt';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login/*" element={<Login />} />
+        {/* <Route path="/" element={<Home />} /> */}
+        <Route path="/receipt" element={<Receipt/>} />
         <Route
           path="/*"
           element={
@@ -69,6 +72,7 @@ function App() {
                 <Route path="/sales" element={<Sales />} />
                 <Route path="/panier" element={<Panier />} />
                 <Route path="/purchases" element={<Purchases />} />
+                {/* <Route path="/receipt" element={<Receipt/>} /> */}
               </Routes>
               </Sidebar >
             </div>

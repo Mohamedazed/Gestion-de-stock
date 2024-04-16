@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import ConfirmModalT from "./ConfirmModalT";
 
 export default function Types() {
     const [types, settypes] = useState([]);
@@ -23,23 +24,38 @@ export default function Types() {
         pageSize: pageSize,
       };
         axios.get("http://localhost:8081/employees/types", { params: queryParams })
-          .then((result) => {console.log('API Response:', result.data); 
-            const data = result.data.result || [];
+          .then((result) => {
             setTotalPages(Math.ceil(result.data.result.length / pageSize)); 
-            settypes(data);
+            settypes(result.data.result || []);
         })
           .catch((err) => console.log(err));
       }
     
+      // const handleDelete = (id) => {
+      //   axios
+      //     .delete(`http://localhost:8081/employes/types/delete/${id}`)
+      //     .then(() => {
+      //       settypes(types.filter((emp) => emp.id !== id));
+      //     })
+      //     .catch((err) => console.log(err));
+      //     console.log(types); 
+      // };
       const handleDelete = (id) => {
-        axios
-          .delete(`http://localhost:8081/employes/types/delete/${id}`)
-          .then(() => {
-            settypes(types.filter((emp) => emp.id !== id));
-          })
-          .catch((err) => console.log(err));
-          console.log(types); 
+        setValues(id);
+        setModalOpen(true);
       };
+    
+      const handleConfirmDelete = async (id) => {
+        try {
+          await axios.delete(`http://localhost:8081/types/delete/${id}`);
+          settypes(types.filter(type => type.id !== id));
+        } catch (error) {
+          console.error('Error deleting type:', error);
+        } finally {
+          setModalOpen(false);
+        }
+      };
+    
 
       const handleNextPage = () => {
         if (currentPage < totalPages) {
@@ -113,6 +129,7 @@ export default function Types() {
                 <EditModal isOpen={isEdItModalOpen} onClose={closeEditModal} values={values} handleChange={handleChange} handleSubmit={handleSubmit} />
                 </>
             )}
+            <ConfirmModalT isOpen={isModalOpen} onClose={() => setModalOpen(false)} onConfirm={() => handleConfirmDelete(values)} />
 
         <table className='table border'>
           <thead>
@@ -162,7 +179,7 @@ export default function Types() {
           <p>Total : {Total} Types</p>
         </div>
         </div>
-                <table className="table table-striped table-hover border">
+                <table className="table table-striped table-hover border text-center">
                     <thead>
                     <tr>
                         <th className='bg-warning-subtle'>Id</th>
