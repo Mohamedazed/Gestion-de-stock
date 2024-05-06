@@ -97,7 +97,7 @@
     position: relative;
     color: var(--first-color-alt);
     transition: 0.5s;
-    margin-bottom: 1.0rem;
+    margin-bottom: 0.4rem;
   }
   
   .nav-link:hover {
@@ -105,6 +105,10 @@
     background-color: rgba(0, 0, 0, 0.1);
   }
   
+  
+  
+  
+
   .active {
     color: var(--white-color);
     background-color: rgba(0, 0, 0, 0.1);

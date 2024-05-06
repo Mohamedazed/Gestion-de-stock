@@ -257,6 +257,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import ShowProdModal from '../products/modalsProd/ShowProdModal';
+import AddProductMod from '../products/modalsProd/AddProductMod';
 
 
 export default function Purchases() {
@@ -265,7 +266,7 @@ export default function Purchases() {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [product,setproduct] = useState(null)
   const [Total, setTotal] = useState(0)
-
+  const [isAddModalOpen, setAddModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -353,7 +354,17 @@ export default function Purchases() {
   const closeEditModal = () => {
     setEditModalOpen(false);
   };
+  const handleAddProduct = () => {
+    setAddModalOpen(true);
+  };
 
+  const openAddModal = (product) => {
+    setAddModalOpen(true);
+  };
+
+  const closeAddModal = () => {
+    setAddModalOpen(false);
+  };
   return (
     <div className="container">
       <div style={{ marginTop: '70px' }}>
@@ -373,14 +384,31 @@ export default function Purchases() {
             handleSubmit={handleSubmit} 
           />
         )}
+        {isAddModalOpen && (
+      <AddProductMod show={isAddModalOpen} handleClose={closeAddModal} />
+      )}
 
       <div>
       <table className='table border'>
           <thead >
             <tr >
               <th className='bg-warning-subtle'>
-                <div className='m-2'>
+                <div className='m-2 d-flex justify-content-between'>
                   <h4 >Liste des Purchases :</h4>
+                  <button onClick={handleAddProduct} className="btn btn-warning rounded-pill pt-2 shadow " >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-plus-circle-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z" />
+                    </svg>{' '}
+                    Buy Product
+                  </button>
                 </div>
               </th>
             </tr>

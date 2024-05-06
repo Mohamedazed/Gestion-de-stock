@@ -324,7 +324,7 @@ export default function Employees() {
 
             <div className='p-3 d-flex justify-content-around mt-3'>
             
-                <div className='px-3 pt-2 pb-3 border bg-warning-subtle shadow-sm w-25'>
+                {/* <div className='px-3 pt-2 pb-3 border bg-warning-subtle shadow-sm w-25'>
                     <div className='text-center pb-1'>
                         <h4>Employee</h4>
                     </div>
@@ -333,7 +333,7 @@ export default function Employees() {
                         <h5>Total:</h5>
                         <h5>{employeeTotal} <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-raised-hand" viewBox="0 0 16 16"><path d="M6 6.207v9.043a.75.75 0 0 0 1.5 0V10.5a.5.5 0 0 1 1 0v4.75a.75.75 0 0 0 1.5 0v-8.5a.25.25 0 1 1 .5 0v2.5a.75.75 0 0 0 1.5 0V6.5a3 3 0 0 0-3-3H6.236a1 1 0 0 1-.447-.106l-.33-.165A.83.83 0 0 1 5 2.488V.75a.75.75 0 0 0-1.5 0v2.083c0 .715.404 1.37 1.044 1.689L5.5 5c.32.32.5.754.5 1.207"/><path d="M8 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/></svg></h5>
                     </div>
-                </div>
+                </div> */}
 
                 {isEditModalOpen && (
                   <EditSuppModal
@@ -346,7 +346,7 @@ export default function Employees() {
                 )}
                 <ConfirmModalE isOpen={isModalOpen} onClose={() => setModalOpen(false)} onConfirm={() => handleConfirmDelete(employee)} />
 
-                <div className='px-3 pt-2 pb-3 border bg-warning-subtle shadow-sm w-25'>
+                {/* <div className='px-3 pt-2 pb-3 border bg-warning-subtle shadow-sm w-25'>
                     <div className='text-center pb-1'>
                         <h4>Salary</h4>
                     </div>
@@ -355,7 +355,7 @@ export default function Employees() {
                         <h5>Total: </h5>
                         <h5> {salaryTotal} <b>DH</b></h5>
                     </div>
-                </div>
+                </div> */}
             </div>
             <div>
                 
@@ -426,7 +426,7 @@ export default function Employees() {
                     {employees.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((emp) => (
                         <tr key={emp.Code_Employee}>
                             <td>{emp.Code_Employee}</td>
-                            <td><img src={`http://localhost:8081/${emp.image.replace(/\\/g, '/')}`} alt={emp.Name} width='100px' height='100px'/></td>
+                            <td>{emp.image ? <img src={`http://localhost:8081/${emp.image.replace(/\\/g, '/')}`} alt={emp.Name} width='100px' height='100px'/>: null}</td>
                             <td>{emp.Name}</td>
                             <td>{emp.Email}</td>
                             <td>{emp.Phone}</td>

@@ -198,6 +198,7 @@ export default function EditEmp() {
     });
     const [types, settypes] = useState([])
     const navigate = useNavigate()
+    const [isModalOpen, setIsModalOpen] = useState(true);
 
     useEffect(()=> {
       axios.get("http://localhost:8081/employees/types")
@@ -269,11 +270,14 @@ const handleChange = (e) => {
     [name]: value
   }));
 };
+const handleCloseModal = () => {
+  setIsModalOpen(false); // Set the state variable to false to close the modal
+};
   
 return (
   <div className="container">
     <Employees/>
-      <EditEmpModal isOpen={true} employee={employee} types={types} handleChange={handleChange} handleFileChange={handleFileChange} handleSubmit={handleSubmit} />
+      <EditEmpModal isOpen={true} onClose={handleCloseModal} employee={employee} types={types} handleChange={handleChange} handleFileChange={handleFileChange} handleSubmit={handleSubmit} />
      
   </div>
 )

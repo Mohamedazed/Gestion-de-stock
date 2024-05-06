@@ -21,6 +21,11 @@ export default function Suppliers() {
   const [pageSize, setPageSize] = useState(10);
   const [isModalOpen, setModalOpen] = useState(false);
 
+  useEffect(() => {
+    Count();
+    fetchData();
+  }, [currentPage, pageSize, searchParams])
+  
   const fetchData = () => {
     const queryParams = {
       ...searchParams,
@@ -75,11 +80,6 @@ export default function Suppliers() {
       [name]: value
     }));
   };
-
-  useEffect(() => {
-    Count();
-    fetchData();
-  }, [currentPage])
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {

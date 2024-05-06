@@ -139,27 +139,31 @@ const handleSubmit = async (e) => {
         </p>
       </div>
 
-      <div className="mt-4">
-        <form onSubmit={handleSubmit}>
+      <div className="mt-4 container border border-warning p-4 rounded-5 bg-light-subtle">
+        <h4 className='text-warning'>Create Supplier : </h4><hr className='border-warning'/>
+        <form onSubmit={handleSubmit} className='row mt-4'>
+          <div className='col'>
           <div className="mb-3">
             <label htmlFor="Name" className="form-label">Name</label>
-            <input type="text" className="form-control" id="Name" name="Name" value={formData.Name} onChange={handleChange} required />
+            <input type="text" className="form-control rounded-pill" placeholder='write the name of supplier' id="Name" name="Name" value={formData.Name} onChange={handleChange} required />
           </div>
           <div className="mb-3">
             <label htmlFor="Phone" className="form-label">Phone</label>
-            <input type="text" className="form-control" id="Phone" name="Phone" value={formData.Phone} onChange={handleChange} />
+            <input type="text" className="form-control rounded-pill" placeholder='write the Phone of supplier' id="Phone" name="Phone" value={formData.Phone} onChange={handleChange} />
           </div>
           <div className="mb-3">
             <label htmlFor="Email" className="form-label">Email</label>
-            <input type="email" className="form-control" id="Email" name="Email" value={formData.Email} onChange={handleChange} required />
+            <input type="email" className="form-control rounded-pill" placeholder='write the Email of supplier' id="Email" name="Email" value={formData.Email} onChange={handleChange} required />
           </div>
+          </div>
+          <div className='col'>
           <div className="mb-3">
             <label htmlFor="Adresse" className="form-label">Address</label>
-            <input type="text" className="form-control" id="Adresse" name="Adresse" value={formData.Adresse} onChange={handleChange} />
+            <input type="text" className="form-control rounded-pill" placeholder='write the Address of supplier' id="Adresse" name="Adresse" value={formData.Adresse} onChange={handleChange} />
           </div>
           <div className="mb-3">
             <label htmlFor="Company" className="form-label">Company</label>
-            <input type="text" className="form-control" id="Company" name="Company" value={formData.Company} onChange={handleChange} />
+            <input type="text" className="form-control rounded-pill" placeholder='write the Company name of supplier' id="Company" name="Company" value={formData.Company} onChange={handleChange} />
           </div>
           <div className="col-12 mb-3">
             <label className="form-label" for="inputGroupFile01">
@@ -167,16 +171,19 @@ const handleSubmit = async (e) => {
             </label>
             <input
               type="file"
-              className="form-control"
+              className="form-control rounded-pill"
               id="image"
               name="image" 
               onChange={handleFileChange}
             />
           </div>
-          <button type="submit" className="btn btn-primary">Submit</button>
-          <Link to="/suppliers" className="btn btn-secondary">
+          </div>
+          <div className='d-flex justify-content-end gap-3'>
+          <Link to="/suppliers" className="btn text-warning">
                     Cancel
           </Link>
+          <button type="submit" className="btn btn-warning">Submit</button>
+          </div>
         </form>
       </div>
     </div>

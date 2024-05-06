@@ -117,6 +117,7 @@ export default function EditProd() {
     const [suppliers, setSuppliers] = useState([]);
     const navigate = useNavigate();
     const { id } = useParams();
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
     useEffect(() => {
         // Fetch existing categories
@@ -161,7 +162,9 @@ export default function EditProd() {
         axios.put(`http://localhost:8081/products/edit/${id}`, product)
             .then(res => {
                 console.log(res.data);
-                navigate('/products');
+                setIsSuccessModalOpen(false);
+                alert('Product updated successfully')
+                // navigate('/purchases');
             })
             .catch(err => {
                 console.error('Error updating product:', err);
@@ -171,7 +174,8 @@ export default function EditProd() {
     return (
         <div className="container">
             <Products/>
-            <EditProdModal isOpen={true} product={product} handleChange={handleChange} handleSubmit={handleSubmit} categories={categories} suppliers={suppliers}/>
+            <EditProdModal isOpen={setIsSuccessModalOpen(true)} product={product} handleChange={handleChange} handleSubmit={handleSubmit} categories={categories} suppliers={suppliers}/>
+            
         </div>
     );
 }

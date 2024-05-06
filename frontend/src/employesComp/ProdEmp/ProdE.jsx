@@ -1,0 +1,356 @@
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import ShowProdMod from './modalsProduct/ShowProdMod';
+import ConfModalP from './ConfModalP';
+import EditProdMod from './modalsProduct/EditProdMod';
+import AddProductModal from './modalsProduct/AddProductModal';
+
+export default function ProdE() {
+  const [data, setData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageSize, setPageSize] = useState(9);
+  const [selectedproduct, setSelectedproduct] = useState(null);
+  const [isShowModalOpen, setShowModalOpen] = useState(false);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [isAddModalOpen, setAddModalOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const navigate = useNavigate()
+  const [product, setProduct] = useState({});
+    const [categories, setCategories] = useState([]);
+    const [suppliers, setSuppliers] = useState([]);
+
+  useEffect(() => {
+    fetchData();
+  }, [currentPage, searchTerm, pageSize]);
+
+  const fetchData = async () => {
+    try {
+      const queryParams = {
+        name: searchTerm,
+      };
+      const response = await axios.get('http://localhost:8081/products', { params: queryParams });
+      const products = response.data.result;
+      const updatedData = await Promise.all(products.map(async (prod) => {
+        const supplierName = await fetchSupplierName(prod.Code_Supplier);
+        return { ...prod, supplierName };
+      }));
+      setData(updatedData);
+      setTotalPages(Math.ceil(updatedData.length / pageSize));
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    setSelectedproduct(id);
+    setModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:8081/products/delete/${selectedproduct}`);
+      setData(prevData => prevData.filter(prod => prod.Code_Product !== selectedproduct));
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    } finally {
+      setModalOpen(false);
+    }
+  };
+  
+
+  const fetchSupplierName = async (Code_Supplier) => {
+    try {
+      const response = await axios.get(`http://localhost:8081/suppliers/show/${Code_Supplier}`);
+      return response.data.result[0].Name; // Assuming the API returns a single supplier
+    } catch (error) {
+      console.error('Error fetching supplier name:', error);
+      return 'Supplier Not Found'; // Default value if supplier name is not found
+    }
+  };
+
+  const handleSearch = async () => {
+    setCurrentPage(1);
+    try {
+      const response = await axios.get(`http://localhost:8081/products/search`, {
+        params: {
+          name: searchTerm,
+        }
+      });
+      setData(response.data.result);
+      setTotalPages(Math.ceil(response.data.result.length / pageSize));
+    } catch (error) {
+      console.error('Error searching products:', error);
+    }
+  };
+
+  const openAddModal = (product) => {
+    setAddModalOpen(true);
+  };
+
+  const closeAddModal = () => {
+    setAddModalOpen(false);
+  };
+
+  const openShowModal = (product) => {
+    setSelectedproduct(product);
+    setShowModalOpen(true);
+  };
+
+  const closeShowModal = () => {
+    setShowModalOpen(false);
+  };
+
+  const openEditModal = (product) => {
+    setSelectedproduct(product);
+    setEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setEditModalOpen(false);
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}/${month}/${day}`;
+  };
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, data.length);
+  const visibleProducts = data.slice(startIndex, endIndex);
+  
+    useEffect(() => {
+        // Fetch existing categories
+        axios.get('http://localhost:8081/categories')
+            .then(res => {
+                setCategories(res.data.result);
+            })
+            .catch(err => {
+                console.error('Error fetching categories:', err);
+            });
+
+        // Fetch existing suppliers
+        axios.get('http://localhost:8081/suppliers')
+            .then(res => {
+                setSuppliers(res.data.result);
+            })
+            .catch(err => {
+                console.error('Error fetching suppliers:', err);
+            });
+
+        // Fetch product details to edit
+        axios.get(`http://localhost:8081/products/show/${data.Code_Product}`)
+            .then(res => {
+                setProduct(res.data.result[0] || {});
+            })
+            .catch(err => {
+                console.error('Error fetching product details:', err);
+            });
+    }, [data.Code_Product]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedproduct(prevProduct => ({
+        ...prevProduct,
+        [name]: value
+    }));
+};
+
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    axios.put(`http://localhost:8081/products/edit/${selectedproduct.Code_Product}`, selectedproduct)
+        .then(res => {
+            console.log(res.data);
+            navigate('/employe/empHome')
+            // navigate('/employe/prodE');
+        })
+        .catch(err => {
+            console.error('Error updating product:', err);
+        });
+};
+
+const handleAddProduct = () => {
+  setAddModalOpen(true);
+};
+
+const formatNumber = (value) => {
+  if (value >= 1000000) {
+    return `${(value / 1000000).toFixed(1)}M`;
+  } else if (value >= 1000) {
+    return `${(value / 1000).toFixed(1)}K`;
+  } else {
+    return value;
+  }
+};
+
+  return (
+    <div className="container" >
+      {isAddModalOpen && (
+      <AddProductModal show={isAddModalOpen} handleClose={closeAddModal} />
+      )}
+
+      {isShowModalOpen && (
+        <ShowProdMod
+          isOpen={isShowModalOpen}
+          onClose={closeShowModal}
+          product={selectedproduct}
+        />
+      )}
+
+      {isEditModalOpen && (
+        <EditProdMod
+          isOpen={isEditModalOpen}
+          onClose={closeEditModal}
+          product={selectedproduct}
+          handleChange={handleChange}
+          handleSubmit={handleSubmit}
+          categories={categories}
+          suppliers={suppliers}
+        />
+      )}
+      <ConfModalP isOpen={isModalOpen} onClose={() => setModalOpen(false)} onConfirm={handleConfirmDelete} />
+
+      <div className='d-flex justify-content-between bg-white border border-warning p-3 m-2 bg-light rounded-5 shadow-sm'>
+        <h4>Liste des Products :</h4>
+        <button onClick={handleAddProduct} className="btn btn-warning rounded-pill pt-2 shadow " >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            className="bi bi-plus-circle-fill"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z" />
+          </svg>{' '}
+          New Product
+        </button>
+      </div>
+
+
+      <div className='border border-warning bg-white shadow-sm rounded-5 p-3 m-3 bg-light'>
+        <div className='d-flex justify-content-between'>
+        <h5 className='mt-1'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg> Find Products</h5>
+        
+        <div className='input-group w-50'>
+          <input type="text" name="name" value={searchTerm} class="form-control" onChange={(e) => setSearchTerm(e.target.value)} className='form-control rounded-start-pill border-end-0' placeholder='Search product' />
+          <span className='input-group-text bg-white border-start-0 '><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg></span>
+          <button onClick={() => handleSearch()} className='btn border btn-success shadow-sm' style={{zIndex: 0}}>Search</button>
+        </div>
+        </div>
+      </div>
+
+      <div className="row bg-white border border-warning shadow-sm rounded-5 p-3 m-3 bg-light" >
+        {visibleProducts.map((prod) => (
+          <div className="col-md-4 mb-3" key={prod.Code_Product}>
+             <div className="card shadow-sm rounded-5 border border-warning-subtle">
+              
+        <div style={{ position: 'relative' }}>
+          <img
+            src={`http://localhost:8081/${prod.Product_Image.replace(/\\/g, '/')}`}
+            className="card-img-top rounded-5 border border-warning-subtle"
+            alt="Product"
+            height="200px"
+          />
+          <div
+            className="card-img-overlay"
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              textAlign: 'left',
+            }}
+          >
+            <small className="card-text bg-dark rounded-pill w-25 text-center pe-1 ps-1" style={{ color: 'gold', margin: 0 }}>
+              {formatNumber(prod.prix_sale)} DH
+            </small>
+          </div>
+          <button style={{
+              position: 'absolute',
+              right: 2,
+              textAlign: 'right',
+            }} onClick={() => handleDelete(prod.Code_Product)} className="btn text-danger rounded-circle m-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                  </svg>
+                  </button>
+        </div>
+              <div className="card-body rounded-5 ">
+                  <h4 className="card-title">{prod.name}</h4>
+                  <p className="text-secondary">From {prod.supplierName}</p>
+                  <p className="text-secondary" style={{marginTop: '-18px'}}>Category of {prod.Categorie}.</p>
+                 <div className="">
+                  <button onClick={() => openShowModal(prod)} className="btn btn-info rounded-4 m-1">
+                    Sale <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16"><path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z"/><path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>
+                  </button>
+                  <button onClick={() => openEditModal(prod)} className="btn btn-primary rounded-4 m-1">
+                     Edit <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-pencil"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"
+                      />
+                    </svg>
+                    </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="d-flex justify-content-center">
+        <nav aria-label="Page navigation example">
+          <ul className="pagination">
+            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+              <button className="page-link" onClick={handlePreviousPage} disabled={currentPage === 1}>
+                Previous
+              </button>
+            </li>
+            {Array.from({ length: totalPages }, (_, index) => (
+              <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                <button className="page-link" onClick={() => setCurrentPage(index + 1)}>
+                  {index + 1}
+                </button>
+              </li>
+            ))}
+            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+              <button
+                className="page-link"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  );
+}

@@ -41,29 +41,30 @@ import { Dropdown } from 'react-bootstrap';
 import ConfirmModalL from './ConfirmModalL';
 import { Avatar } from 'keep-react';
 import Receipt from './sales/Receipt';
+import Select from 'react-select';
 
 const Sidebar = () => {
   const [show, setShow] = useState(false);
   const [auth, setAuth] = useState(false);
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  const location = useLocation();
   const [name, setName] = useState(null);
   const [image, setImage] = useState(null)
   const [id, setId] = useState(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
-  useEffect(() => {
-    if (name) {
-      axios
-        .get(`http://localhost:8081/profil/${name}`)
-        .then((res) => {
-          setId(res.data.UserId);
-          setImage(res.data.Image)
-        })
-        .catch((err) => console.log(err));
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get('http://localhost:8081/products/search', {
+        params: { name: searchQuery }
+      });
+      setSearchResults(response.data.result);
+    } catch (error) {
+      console.error('Error searching:', error);
     }
-  }, [name]);
+  };
 
   useEffect(() => {
     axios
@@ -71,7 +72,7 @@ const Sidebar = () => {
       .then((res) => {
         if (res.data.Status === 'Success') {
           setAuth(true);
-          setName(res.data.name);
+          setName(res.data.name); // Set the name state after successful authentication
         } else {
           setAuth(false);
           setMessage(res.data.Error);
@@ -79,19 +80,27 @@ const Sidebar = () => {
       })
       .catch((err) => console.log(err));
   }, []);
+  
+  useEffect(() => {
+    if (name) {
+      axios
+        .get(`http://localhost:8081/profile/name/${name}`)
+        .then((res) => {
+          setId(res.data.UserId);
+          setImage(res.data.Image);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [name]);
+  
 
-  // const handleDelete = () => {
-  //   axios
-  //     .get('http://localhost:8081/logout')
-  //     .then((res) => {
-  //       navigate('/login', { replace: true });
-  //     })
-  //     .catch((err) => console.log(err));
-  // };
   const handleDelete = () => {
     setShowLogoutModal(true);
   };
-
+  const options = searchResults.map((product) => ({
+    value: product.id,
+    label: product.name,
+  }));
   const confirmLogout = () => {
     axios
       .get('http://localhost:8081/logout')
@@ -117,9 +126,11 @@ const Sidebar = () => {
                   </Link>
                 </div>
                 <div className='input-group ms-5'>
-                  <input type='text' className='form-control rounded-start-pill border-end-0' placeholder='Search' />
+                  {/* <input type='text' value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className='form-control rounded-start-pill border-end-0' placeholder='Search' /> */}
+                  <Select value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className='form-control rounded-start-pill border-end-0 p-0' options={options} />
                   <span className='input-group-text bg-white border-start-0 '><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg></span>
-                  <button className='btn border btn-warning btnS'>Search</button>
+                  <button onClick={handleSearch} className='btn border btn-warning btnS'>Search</button>
+                  
                 </div>
               
             </div>
@@ -133,14 +144,9 @@ const Sidebar = () => {
                     <img src={`http://localhost:8081/uploads/${image}`} alt='Profile' className='profile-link-image' />
                   </a>
                   <ul class="dropdown-menu">
-                    <li><Link class="dropdown-item" to={`/profile/${id}`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" className="mb-1 bi bi-person-fill" viewBox="0 0 16 16">
-  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
-</svg>  Profile </Link></li>
-                    <li><button class="dropdown-item" href="/logout" onClick={handleDelete}><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" className="mb-1 bi bi-box-arrow-right" viewBox="0 0 16 16">
-  <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
-  <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
-</svg> Logout</button></li>
+                    <li><Link className="dropdown-item" to={`/profile/${id}`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" className="mb-1 bi bi-person-fill" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/></svg>  Profile </Link></li>
+                    <li><button className="dropdown-item" href="/logout" onClick={handleDelete}><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" className="mb-1 bi bi-box-arrow-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/><path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/></svg> Logout</button></li>
                   </ul>
               </div>
             </div>)
@@ -162,25 +168,33 @@ const Sidebar = () => {
           </div>
           </header>
 
-          <ConfirmModalL isOpen={showLogoutModal} onClose={() => (setShowLogoutModal(false), navigate('/'))} onConfirm={() => confirmLogout()} />
+          <ConfirmModalL isOpen={showLogoutModal} onClose={() => (setShowLogoutModal(false), navigate('/home'))} onConfirm={() => confirmLogout()} />
 
           <aside className={`sidebar ${show ? 'show' : null}`} style={{zIndex:2}}>
             <nav className='nav'>
               <div>
-                <Link to='/' className='nav-logo'>
-                  <i className={`fas fa-home-alt nav-logo-icon`}></i>
-                  <span className='nav-logo-name'>Homepage</span>
+                <Link to='/home' className='nav-logo'>
+                <img src='/public/logoSM2.png' width='30px' style={{marginLeft: '-5px'}}/>
+                  {/* <i className={`fas fa-home-alt nav-logo-icon`}></i> */}
+                  <sapn className='nav-logo-name me-1' style={{ fontFamily:'spanrush Script MT'}}><b>Aizen Stock</b></sapn>
                 </Link>
 
                 <div className='nav-list'>
                   <NavLink
-                    to='/'
+                    to='/home'
                     className='nav-link'
-                    isActive={(match, location) => ['/'].includes(location.pathname)}
+                    isActive={(match, location) => ['/home'].includes(location.pathname)}
                   >
                     <i className='fas fa-tachometer-alt nav-link-icon'></i>
                     <span className='nav-link-name'>Dashboard</span>
                   </NavLink>
+                  <NavLink to={`/profile/${id}`} className='nav-link'>
+                    <i>
+                      <UserOutlined />
+                    </i>
+                    <span className='nav-link-name'>Profile</span>
+                  </NavLink>
+                  <br/>
                   <NavLink to='/categories' className='nav-link'>
                     <i>
                       <AppstoreAddOutlined />
@@ -210,7 +224,7 @@ const Sidebar = () => {
                       <ShoppingOutlined />
                     </i>
                     <span className='nav-link-name'>purchases</span>
-                  </NavLink>
+                  </NavLink><br/>
                   <NavLink to='/employees' className='nav-link'>
                     <i>
                       <TeamOutlined />
@@ -224,12 +238,7 @@ const Sidebar = () => {
                     <span className='nav-link-name'>Types</span>
                   </NavLink>
 
-                  <NavLink to={`/profile/${id}`} className='nav-link'>
-                    <i>
-                      <UserOutlined />
-                    </i>
-                    <span className='nav-link-name'>Profile</span>
-                  </NavLink>
+                
                 </div>
               </div>
 
@@ -240,7 +249,7 @@ const Sidebar = () => {
             </nav>
           </aside>
           <Routes >
-            <Route path='/' element={<Home />} />
+            <Route path='/home' element={<Home />} />
             <Route path='/categories' element={<Categories />} />
             <Route path='/products' element={<Products />} />
             <Route path='/suppliers' element={<Suppliers />} />

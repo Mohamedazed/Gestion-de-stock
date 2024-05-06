@@ -153,7 +153,7 @@ const Profile = () => {
   const [isEdItModalOpen, setEdItModalOpen] = useState(false);
 
   useEffect(() => {
-    axios.get(`http://localhost:8081/profile/${id}`)
+    axios.get(`http://localhost:8081/profile/id/${id}`)
       .then(res => {
         if (res.data && Array.isArray(res.data.Result) && res.data.Result.length > 0) {
           setAdmin({
@@ -199,19 +199,6 @@ const Profile = () => {
     setEdItModalOpen(false);
   };
 
-  // const handleImageChange = e => {
-  //   const file = e.target.files[0];
-  //   const formData = new FormData();
-  //   formData.append('name', admin.name);
-  //   formData.append('image', file);
-  //   axios.put(`http://localhost:8081/profile/edit/${id}`, formData)
-  //     .then(result => {console.log(result.data);
-  //       navigate(`/profile/${id}`);
-  //     })
-  //     .catch(error => {
-  //       console.error('Error uploading image:', error);
-  //     });
-  // };
   const handleImageChange = e => {
     const file = e.target.files[0];
     const formData = new FormData();
@@ -219,10 +206,9 @@ const Profile = () => {
     formData.append('image', file);
     axios.put(`http://localhost:8081/profile/edit/${id}`, formData)
       .then(result => {
-        // Update the state with the new image URL
         setAdmin(prevAdmin => ({
           ...prevAdmin,
-          image: result.data.imageUrl // Assuming your response contains the URL of the uploaded image
+          image: result.data.imageUrl
         }));
         console.log(result.data);
         navigate(`/profile/${id}`);
@@ -254,7 +240,7 @@ const Profile = () => {
       <div className="border d-flex shadow bg-light mt-4">
       <div className="me-3 bg-warning-subtle ">
         <div className="mt-3 mb-2 user-img">
-          <img src={`http://localhost:8081/uploads/${admin.image}`} alt={admin.name} className=" border m-2" id='photo' />
+          <img src={`http://localhost:8081/uploads/${admin.image}`} alt={admin.name} className=" border border-warning shadow m-2" id='photo' />
           <input type='file' id='file' onChange={handleImageChange}/>
           <label for='file' id='uploadbtn'><i className='fas fa-camera'></i></label>
         </div>

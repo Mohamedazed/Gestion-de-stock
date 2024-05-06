@@ -2,6 +2,7 @@
 // import { Link } from 'react-router-dom';
 // import axios from 'axios';
 // import ShowProdModal from './modalsProd/ShowProdModal';
+// import ConfirmModalP from './ConfirmModalP';
 
 // export default function Products() {
 //   const [data, setData] = useState([]);
@@ -13,6 +14,7 @@
 //   const [isShowModalOpen, setShowModalOpen] = useState(false);
 //   const [isEditModalOpen, setEditModalOpen] = useState(false);
 //   const [product, setProduct] = useState(null);
+//   const [isModalOpen, setModalOpen] = useState(false);
 
 //   useEffect(() => {
 //     fetchData();
@@ -49,13 +51,21 @@
 //   };
 
 //   const handleDelete = async (id) => {
+//     setSelectedproduct(id);
+//     setModalOpen(true);
+//   };
+
+//   const handleConfirmDelete = async () => {
 //     try {
-//       await axios.delete(`http://localhost:8081/products/delete/${id}`);
-//       setData((prevData) => prevData.filter((prod) => prod.Code_Product !== id));
+//       await axios.delete(`http://localhost:8081/products/delete/${selectedproduct}`);
+//       setData(prevData => prevData.filter(prod => prod.Code_Product !== selectedproduct));
 //     } catch (error) {
 //       console.error('Error deleting product:', error);
+//     } finally {
+//       setModalOpen(false);
 //     }
 //   };
+  
 
 //   const fetchSupplierName = async (Code_Supplier) => {
 //     try {
@@ -143,6 +153,8 @@
 //           handleSubmit={handleSubmit}
 //         />
 //       )}
+//       <ConfirmModalP isOpen={isModalOpen} onClose={() => setModalOpen(false)} onConfirm={handleConfirmDelete} />
+
 //       <div className='d-flex justify-content-between border border-warning p-3 m-3 bg-light'>
 //         <h2>Liste des Products :</h2>
 //         <Link to="/products/create" className="btn btn-warning rounded-pill pt-2 shadow" >
@@ -263,14 +275,19 @@
 //   );
 // }
 
-
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import ShowProdModal from './modalsProd/ShowProdModal';
+// import ShowProdModal from './modalsProduct/ShowProdModal';
+// import ConfirmModalP from './ConfirmModalP';
+// import EditProdMod from './modalsProduct/EditProdMod';
+// import AddProductModal from './modalsProduct/AddProductModal';
 import ConfirmModalP from './ConfirmModalP';
+import ShowProdModal from './modalsProd/ShowProdModal';
+import AddProductMod from './modalsProd/AddProductMod';
+import EditProdM from './modalsProd/EditProdM';
 
-export default function Products() {
+export default function ProdE() {
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -279,8 +296,12 @@ export default function Products() {
   const [selectedproduct, setSelectedproduct] = useState(null);
   const [isShowModalOpen, setShowModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const [product, setProduct] = useState(null);
+  const [isAddModalOpen, setAddModalOpen] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+  const navigate = useNavigate()
+  const [product, setProduct] = useState({});
+    const [categories, setCategories] = useState([]);
+    const [suppliers, setSuppliers] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -316,14 +337,6 @@ export default function Products() {
     }
   };
 
-  // const handleDelete = async (id) => {
-  //   try {
-  //     await axios.delete(`http://localhost:8081/products/delete/${id}`);
-  //     setData((prevData) => prevData.filter((prod) => prod.Code_Product !== id));
-  //   } catch (error) {
-  //     console.error('Error deleting product:', error);
-  //   }
-  // };
   const handleDelete = async (id) => {
     setSelectedproduct(id);
     setModalOpen(true);
@@ -366,6 +379,14 @@ export default function Products() {
     }
   };
 
+  const openAddModal = (product) => {
+    setAddModalOpen(true);
+  };
+
+  const closeAddModal = () => {
+    setAddModalOpen(false);
+  };
+
   const openShowModal = (product) => {
     setSelectedproduct(product);
     setShowModalOpen(true);
@@ -395,6 +416,70 @@ export default function Products() {
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = Math.min(startIndex + pageSize, data.length);
   const visibleProducts = data.slice(startIndex, endIndex);
+  
+    useEffect(() => {
+        // Fetch existing categories
+        axios.get('http://localhost:8081/categories')
+            .then(res => {
+                setCategories(res.data.result);
+            })
+            .catch(err => {
+                console.error('Error fetching categories:', err);
+            });
+
+        // Fetch existing suppliers
+        axios.get('http://localhost:8081/suppliers')
+            .then(res => {
+                setSuppliers(res.data.result);
+            })
+            .catch(err => {
+                console.error('Error fetching suppliers:', err);
+            });
+
+        // Fetch product details to edit
+        axios.get(`http://localhost:8081/products/show/${data.Code_Product}`)
+            .then(res => {
+                setProduct(res.data.result[0] || {});
+            })
+            .catch(err => {
+                console.error('Error fetching product details:', err);
+            });
+    }, [data.Code_Product]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedproduct(prevProduct => ({
+        ...prevProduct,
+        [name]: value
+    }));
+};
+
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    axios.put(`http://localhost:8081/products/edit/${selectedproduct.Code_Product}`, selectedproduct)
+        .then(res => {
+            console.log(res.data);
+            navigate('/products')
+        })
+        .catch(err => {
+            console.error('Error updating product:', err);
+        });
+};
+
+const handleAddProduct = () => {
+  setAddModalOpen(true);
+};
+
+const formatNumber = (value) => {
+  if (value >= 1000000) {
+    return `${(value / 1000000).toFixed(1)}M`;
+  } else if (value >= 1000) {
+    return `${(value / 1000).toFixed(1)}K`;
+  } else {
+    return value;
+  }
+};
 
   return (
     <div className="container" >
@@ -409,6 +494,9 @@ export default function Products() {
           / <span style={{ color: 'gray' }}>Products</span>
         </p>
       </div>
+      {isAddModalOpen && (
+      <AddProductMod show={isAddModalOpen} handleClose={closeAddModal} />
+      )}
 
       {isShowModalOpen && (
         <ShowProdModal
@@ -419,19 +507,21 @@ export default function Products() {
       )}
 
       {isEditModalOpen && (
-        <EditSuppModal
+        <EditProdM
           isOpen={isEditModalOpen}
           onClose={closeEditModal}
-          product={product}
+          product={selectedproduct}
           handleChange={handleChange}
           handleSubmit={handleSubmit}
+          categories={categories}
+          suppliers={suppliers}
         />
       )}
       <ConfirmModalP isOpen={isModalOpen} onClose={() => setModalOpen(false)} onConfirm={handleConfirmDelete} />
 
-      <div className='d-flex justify-content-between border border-warning p-3 m-3 bg-light'>
-        <h2>Liste des Products :</h2>
-        <Link to="/products/create" className="btn btn-warning rounded-pill pt-2 shadow" >
+      <div className='d-flex justify-content-between bg-light border border-warning p-3 m-3 rounded-5 shadow-sm'>
+        <h4>Liste des Products :</h4>
+        <button onClick={handleAddProduct} className="btn btn-warning rounded-pill pt-2 shadow " >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -444,11 +534,11 @@ export default function Products() {
               d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z" />
           </svg>{' '}
           New Product
-        </Link>
+        </button>
       </div>
 
 
-      <div className='border border-warning p-3 m-3 bg-light'>
+      <div className='border border-warning bg-light shadow-sm rounded-5 p-3 m-3'>
         <div className='d-flex justify-content-between'>
         <h5 className='mt-1'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg> Find Products</h5>
         
@@ -460,28 +550,52 @@ export default function Products() {
         </div>
       </div>
 
-      <div className="row border border-warning p-3 m-3 bg-light" >
+      <div className="row border border-warning shadow-sm rounded-5 p-3 m-3 bg-light" >
         {visibleProducts.map((prod) => (
           <div className="col-md-4 mb-3" key={prod.Code_Product}>
-            <div className="card">
-              <img
-                src={`http://localhost:8081/${prod.Product_Image.replace(/\\/g, '/')}`}
-                className="card-img-top"
-                alt="Product" height='200px'
-              />
-              <div className="card-body">
-                <h4 className="card-title text-center">{prod.name}</h4>
-                <p className="card-text">Category: {prod.Categorie}</p>
-                <p className="card-text">Price for sale: {prod.prix_sale}DH</p>
-                <p className="card-text">Quantity: {prod.Quantite}</p>
-                <p className="card-text">Supplier: {prod.supplierName}</p>
-                <p className="card-text">Date d'ajout: {formatDate(prod.Date_Ajout)}</p>
-                <div className="text-center">
-                  <button onClick={() => openShowModal(prod)} className="btn btn-outline-info rounded-circle m-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16"><path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z"/><path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>
+             <div className="card shadow-sm rounded-5 border border-warning-subtle">
+              
+        <div style={{ position: 'relative' }}>
+          <img
+            src={`http://localhost:8081/${prod.Product_Image.replace(/\\/g, '/')}`}
+            className="card-img-top rounded-5 border border-warning-subtle"
+            alt="Product"
+            height="200px"
+          />
+          <div
+            className="card-img-overlay"
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              textAlign: 'left',
+            }}
+          >
+            <small className="card-text bg-dark rounded-pill w-25 text-center pe-1 ps-1" style={{ color: 'gold', margin: 0 }}>
+              {formatNumber(prod.prix_sale)} DH
+            </small>
+          </div>
+          <button style={{
+              position: 'absolute',
+              right: 2,
+              textAlign: 'right',
+            }} onClick={() => handleDelete(prod.Code_Product)} className="btn text-danger rounded-circle m-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                  </svg>
                   </button>
-                  <Link to={`/products/edit/${prod.Code_Product}`} className="btn btn-outline-primary rounded-circle m-1">
-                    <svg
+        </div>
+              <div className="card-body rounded-5 ">
+                  <h4 className="card-title">{prod.name}</h4>
+                  <p className="text-secondary">From {prod.supplierName}</p>
+                  <p className="text-secondary" style={{marginTop: '-18px'}}>Category of {prod.Categorie}.</p>
+                 <div className="">
+                  <button onClick={() => openShowModal(prod)} className="btn btn-info rounded-4 m-1">
+                    Sale <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16"><path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z"/><path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>
+                  </button>
+                  <button onClick={() => openEditModal(prod)} className="btn btn-primary rounded-4 m-1">
+                     Edit <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
                       height="16"
@@ -493,24 +607,7 @@ export default function Products() {
                         d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"
                       />
                     </svg>
-                  </Link>
-                  <button onClick={() => handleDelete(prod.Code_Product)} className="btn btn-outline-danger rounded-circle m-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="bi bi-trash"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"
-                      />
-                      <path
-                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"
-                      />
-                    </svg>
-                  </button>
+                    </button>
                 </div>
               </div>
             </div>

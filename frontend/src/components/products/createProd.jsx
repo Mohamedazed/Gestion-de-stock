@@ -9,6 +9,7 @@ export default function CreateProd() {
         price: '',
         quantity: '',
         supplier: '',
+        prix_sale: '',
         productImage: null 
     });
     const [categories, setCategories] = useState([]);
@@ -61,6 +62,7 @@ export default function CreateProd() {
         formData.append('quantity', product.quantity);
         formData.append('supplier', product.supplier);
         formData.append('productImage', product.productImage);
+        formData.append('prix_sale', product.prix_sale);
 
         axios.post('http://localhost:8081/products/create', formData)
             .then(res => {
@@ -96,6 +98,10 @@ export default function CreateProd() {
                 <div className="form-group">
                     <label htmlFor="quantity">Quantity:</label>
                     <input type="text" className="form-control" name="quantity" id="quantity" value={product.quantity} onChange={handleChange} />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="price">Price for sale:</label>
+                    <input type="text" className="form-control" name="prix_sale" id="prix_sale" value={product.prix_sale} onChange={handleChange} />
                 </div>
                 <div className="form-group">
                     <label htmlFor="supplier">Supplier:</label>

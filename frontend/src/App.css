@@ -2,10 +2,22 @@
 #body {
   margin: 0;
   padding: 0;
-  background: url('/public/bgstock.jpg') no-repeat center center fixed;
-  background-size: cover;
+  /* background: url('/public/bgstock.jpg') no-repeat center center fixed;
+  background-size: cover; */
   height: 100vh;
   overflow: hidden;
+}
+
+.bg{
+  background: url('/public/work.jpg')
+}
+
+.temp{
+  background: url('/public/temp.jpg');
+  background-size: cover;
+  width: 50%;
+  height: 100%;
+  
 }
 
 #root {
@@ -123,3 +135,4 @@
 h1{
   margin-bottom: 5px;
 }
+

@@ -32,6 +32,15 @@ import Purchases from './components/sales/Purchases';
 import Sales from './components/sales/Sales';
 import Panier from './components/sales/Panier';
 import Receipt from './components/sales/Receipt';
+import Start from './components/start';
+import EmployeeLogin from './employesComp/EmployeeLogin';
+import SignupEmployee from './employesComp/SignupEmployee';
+import ProdE from './employesComp/ProdEmp/ProdE';
+import Navbar from './employesComp/Navbar';
+import SuppE from './employesComp/SupEmp/SuppE';
+import CatE from './employesComp/CatEmp/CatE';
+import EmpHome from './employesComp/empHome';
+import ProfilEmp from './employesComp/ProfEmp/ProfilEmp';
 
 function App() {
   return (
@@ -39,7 +48,25 @@ function App() {
       <Routes>
         <Route path="/signup" element={<Signup />} />
         <Route path="/login/*" element={<Login />} />
-        {/* <Route path="/" element={<Home />} /> */}
+        <Route path="/employee_login/*" element={<EmployeeLogin />} />
+        <Route path="/SignupEmployee/*" element={<SignupEmployee />} />
+        <Route
+          path="/employe/*"
+          element={
+            <div>
+              <Navbar >
+                <Routes>
+                  <Route path="/employe/empHome" element={<EmpHome />} />
+                  <Route path="/employe/catE" element={<CatE />} />
+                  <Route path="/employe/prodE" element={<ProdE />} />
+                  <Route path="/employe/SuppE" element={<SuppE />} />
+                  <Route path="/employe/profE/:id" element={<ProfilEmp />} />
+                </Routes>
+              </Navbar >
+            </div>
+          }
+        />
+        <Route path="/" element={<Start />} />
         <Route path="/receipt" element={<Receipt/>} />
         <Route
           path="/*"
@@ -47,7 +74,7 @@ function App() {
             <div>
               <Sidebar >
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/categories" element={<Categories />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/suppliers" element={<Suppliers />} />

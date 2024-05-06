@@ -3,6 +3,8 @@ import Login from './Login';
 import '../App.css';
 import {Route, Routes , useNavigate} from 'react-router-dom';
 import axios from 'axios';
+import Navb from './Navb';
+import Footer from './footer';
 
 export default function Signup() {
   const name = useRef();
@@ -63,22 +65,7 @@ export default function Signup() {
             }
           })
           .then(err => console.log(err))
-      // try {
-      //   await axiosClient.post('/signup', {
-      //     name: nameValue,
-      //     email: emailValue,
-      //     password: passwordValue,
-      //   });
-
-      //   name.current.value = '';
-      //   email.current.value = '';
-      //   password.current.value = '';
-      //   confirmPassword.current.value = '';
-
-      //   navigate('/login');
-      // } catch (error) {
-      //   console.log(error);
-      // }
+      
     }
   };
 
@@ -88,7 +75,9 @@ export default function Signup() {
   };
 
   return (
-    <div id='body' className="login-container">
+    <>
+      <Navb /> 
+    <div id='body' className="login-container" style={{marginTop: '-25px'}}>
       <div className="login-popup">
         {/* Left Side - Form */}
         <div className="login-form" style={{ overflowY: 'auto' }}>
@@ -142,7 +131,7 @@ export default function Signup() {
             </button>
           </form><br/>
           <div className="text-center mt-auto">
-          <span onClick={goToSignUp} >LOGIN</span>
+          Already have an account?<span onClick={goToSignUp} className='btn btn-link text-dark mb-1'> Login</span>
 
               <Routes>
                 <Route path='/login' element={<Login/>}/>
@@ -158,5 +147,7 @@ export default function Signup() {
         </div>
       </div>
     </div>
+    <Footer/>
+    </>
   );
 }

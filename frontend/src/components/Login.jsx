@@ -3,6 +3,8 @@ import Signup from './Signup';
 import { Route, Routes , useNavigate} from 'react-router-dom';
 import '../App.css';
 import axios from 'axios';
+import Navb from './Navb';
+import Footer from './footer';
 
 export default function Login() {
   const email = useRef();
@@ -41,10 +43,10 @@ export default function Login() {
         axios.post('http://localhost:8081/login', {
           email: emailValue,
           password: passwordValue,
-        })
+        }, { withCredentials: true })
         .then(res => {
           if(res.data.Status === "Success"){
-            navigate('/')
+            navigate('/home')
           }else{
             alert(res.data.Error)
           }
@@ -53,18 +55,38 @@ export default function Login() {
         
     }
   };
-    
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
   
+  //   if (!validateForm()) {
+  //     const emailValue = email.current.value;
+  //     const passwordValue = password.current.value;
   
+  //     axios.post('http://localhost:8081/login', {
+  //       email: emailValue,
+  //       password: passwordValue,
+  //     }, { withCredentials: true })
+  //     .then(result => {
+  //       if (result.data.loginStatus) {
+  //         localStorage.setItem("valid", true);
+  //         navigate('/home'); // Navigate to /home instead of /
+  //       } else {
+  //         alert(result.data.Error);
+  //       }
+  //     })
+  //     .catch(err => console.log(err)); // Use catch to handle errors
+  //   }
+  // };
 
-
-
+  
   const goToSignUp = () => {
     navigate('/signup'); 
   };
 
   return (
-    <div id='body' className="login-container">
+    <>
+      <Navb /> 
+    <div id='body' className="login-container" style={{marginTop: '-25px'}}>
       <div className="login-popup">
         {/* Left Side - Form */}
         <div className="login-form" style={{ overflowY: 'auto' }}>
@@ -107,7 +129,8 @@ export default function Login() {
           }
 
           <div className="text-center mt-auto">
-          <span onClick={goToSignUp} >SIGN UP</span>
+          Don't have an account? 
+          <span onClick={goToSignUp} className='btn btn-link text-dark mb-1'>Sign up</span>
 
               <Routes>
                 <Route path='/singup' element={<Signup/>}/>
@@ -123,6 +146,8 @@ export default function Login() {
         </div>
       </div>
     </div>
+    <Footer/>
+    </>
   );
 
 }

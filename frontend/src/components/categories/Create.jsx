@@ -21,7 +21,7 @@ export default function Create() {
     };
 
     return (
-        <div className="container">
+        <div className="container ">
             
           <div>
             <h3 style={{ marginTop: '70px' }}>Create Category</h3>
@@ -35,7 +35,7 @@ export default function Create() {
             </p>
           </div>
     
-          <div className='mt-3'>
+          <div className='mt-3 '>
             <div className="w-50 rounded p-3 border bg-light w-50 shadow-sm">
               <h4 className='text-center'>Create a New Category:</h4>
               <form>

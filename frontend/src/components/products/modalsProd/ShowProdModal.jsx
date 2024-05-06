@@ -118,8 +118,8 @@ const ShowProdModal = ({ isOpen, onClose, product }) => {
           <div className="modal-body bg-warning-subtle">
             {/* Product information */}
             <div className='text-center'>
-              <div className='border border-warning d-inline-block'>
-                <img src={`http://localhost:8081/${product.Product_Image.replace(/\\/g, '/')}`} alt="Product" height='200px' />
+              <div className='border border-warning rounded-5 d-inline-block'>
+                <img src={`http://localhost:8081/${product.Product_Image.replace(/\\/g, '/')}`} alt="Product" height='200px' className='rounded-5' />
               </div>
             </div>
             {/* Additional product details */}
@@ -132,7 +132,7 @@ const ShowProdModal = ({ isOpen, onClose, product }) => {
             </div>
             {/* Quantity input and Add to Cart button */}
             <hr className='border border-warning' />
-            <div className='text-center border border-warning p-3 bg-light shadow'>
+            <div className='text-center border border-warning rounded-5 p-3 bg-light shadow'>
               <button className='btn btn-warning me-2 text-center p-1' style={{ width: '30px', height: '30px' }} onClick={handleIncrement}>+</button>
               <input type='text' value={quantity} style={{ width: '50px', padding: '3px' }} className='shadow text-center' readOnly />
               <button className='btn btn-warning ms-2 text-center p-1' style={{ width: '30px', height: '30px' }} onClick={handleDecrement}>-</button>
