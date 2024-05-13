@@ -11,9 +11,6 @@ export default function EditEmpModal({ isOpen, onClose, employee,types, handleCh
             <div className="modal-content">
               <div className="modal-header bg-warning-subtle">
                 <h5 className="modal-title">Edit employee</h5>
-                {/* <button type="button" className="close bg-danger text-light ps-2 pe-2 rounded pt-1" data-dismiss="modal" aria-label="Close" onClick={onClose}>
-                  <span aria-hidden="true">&times;</span>
-                </button> */}
               </div>
               <div className="modal-body">
                 <form onSubmit={handleSubmit}>

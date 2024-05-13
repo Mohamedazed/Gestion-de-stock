@@ -8,7 +8,7 @@ export default function EditModalP({ isOpen, onClose, values, setValues ,handleC
     <div className="modal show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)', display: 'block', width: '100%' }}>
               <div className="modal-dialog modal-dialog-centered" role="document">
                 <div className="modal-content">
-                  <div className="modal-header bg-warning-subtle">
+                  <div className="modal-header bg-warning-subtle d-flex justify-content-between">
                     <h5 className="modal-title">Edit values</h5>
                     <button type="button" className="close bg-danger text-light ps-2 pe-2 rounded pt-1" data-dismiss="modal" aria-label="Close" onClick={onClose}>
                       <span aria-hidden="true">&times;</span>

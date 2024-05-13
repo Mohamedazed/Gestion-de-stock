@@ -19,11 +19,9 @@ const ConfirmSuccessP = ({ isOpen, onClose }) => {
             </Typography>
           </Typography>
         </Modal.Content>
-        <Modal.Footer className="modal-footer">
-          <Button onClick={onClose} size="sm" color="success" className='btn btn-success rounded-pill'>
+          <Button onClick={onClose} size="sm" color="success" className='btn btn-success rounded-pill shadow'>
             Confirm
           </Button>
-        </Modal.Footer>
       </Modal.Body>
     </Modal>
   );

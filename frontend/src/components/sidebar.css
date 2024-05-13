@@ -187,8 +187,8 @@
 /* Show the name when screen width is at least 768px */
 @media screen and (min-width: 768px) {
   .profile-link-name {
-    display: inline; /* Display the name */
-    margin-right: 0.5rem; /* Add some spacing */
+    display: inline;
+    margin-right: 0.5rem; 
     color: #ae8b41;
   }
 

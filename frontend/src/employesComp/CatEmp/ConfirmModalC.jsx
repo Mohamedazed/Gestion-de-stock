@@ -1,6 +1,4 @@
-import { useState } from 'react';
 import { Button, Modal, Typography } from 'keep-react';
-import { CloudArrowUp } from 'phosphor-react';
 
 const ConfirmModalC = ({ isOpen, onClose, onConfirm }) => {
   return (

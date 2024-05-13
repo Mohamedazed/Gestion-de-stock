@@ -15,7 +15,7 @@ export default function ProfilEmp() {
       const navigate = useNavigate();
       const [selectedadmin, setSelectedadmin] = useState(null);
       const [currentDateTime, setCurrentDateTime] = useState(new Date());
-      const [values, setValues] = useState(null);
+      const [values, setValues] = useState({name: '', image: ''});
       const [isEdItModalOpen, setEdItModalOpen] = useState(false);
     
       useEffect(() => {
@@ -34,22 +34,6 @@ export default function ProfilEmp() {
           })
           .catch(err => console.log(err));
       }, [id]);
-
-    //   useEffect(() => {
-    //     axios.get(`http://localhost:8081/employee/profile/${id}`)
-    //     .then(res => {
-    //       if (res.data && res.data.Status && res.data.Result && res.data.Result.length > 0) {
-    //         setValues({ 
-    //           name: res.data.Result[0].name, 
-    //           image: res.data.Result[0].image });
-    //       } else {console.log(values)
-    //         console.error('Invalid data structure in response:', res.data);
-    //       }
-    //     })
-    //     .catch(err => {
-    //       console.error(err);
-    //     });
-    // }, [id]);
     
       const handleChange = e => {
         const { name, value } = e.target;
@@ -91,7 +75,21 @@ export default function ProfilEmp() {
       const closeEditModal = () => {
         setEdItModalOpen(false);
       };
-    
+      
+      const handlSubmit = (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('name', values.name);
+        formData.append('image', values.image);
+        axios.put(`http://localhost:8081/employee/profile/edit/${id}`, formData)
+          .then((res) => {
+            console.log(res.data);
+            navigate(`/employe/profE/${id}`); 
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      };
       const handleImageChange = e => {
         const file = e.target.files[0];
         const formData = new FormData();
@@ -116,13 +114,13 @@ export default function ProfilEmp() {
           setCurrentDateTime(new Date());
         }, 1000); 
     
-        return () => clearInterval(interval); // Cleanup interval on unmount
+        return () => clearInterval(interval);
       }, []);
     
       return (
         <div className="container" >
         
-          <div className="border d-flex shadow bg-light mt-1 rounded-5 border-warning"  style={{width: '100%'}}>
+          <div className="border d-flex shadow bg-light mt-1 rounded-5 border-warning"  style={{width: '100%',overflowX: 'auto' }}>
           <div className="me-3 bg-warning-subtle rounded-5 border-warning ">
             <div className="mt-3 mb-2 user-img">
               <img src={`http://localhost:8081/uploads/${admin.image}`} alt={admin.name} className=" border border-warning shadow m-2" id='photo' />
@@ -142,11 +140,11 @@ export default function ProfilEmp() {
           </div>
         </div>
     
-        <div className="border mt-5 p-3 shadow bg-light rounded-5 border-warning" style={{width: '100%'}}>
+        <div className="border mt-5 p-3 shadow bg-light rounded-5 border-warning" style={{width: '100%', overflowX: 'auto' }}>
       
         <div className="d-flex justify-content-between align-items-center">
           <h4>Personal Details</h4>
-          <button onClick={() => openEditModal(admin)} className='btn bg-warning-subtle rounded-pill'>
+          <button onClick={() => setEdItModalOpen(true)} className='btn bg-warning-subtle rounded-pill'>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil" viewBox="0 0 16 16">
               <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
             </svg>
@@ -165,7 +163,8 @@ export default function ProfilEmp() {
     </div>
           {isEdItModalOpen && (
             <>
-              <EditModalP isOpen={openEditModal} onClose={closeEditModal} admin={values} handleChange={handleChang} handleSubmit={handleSubmit} />
+              {/* <EditModalP isOpen={openEditModal} onClose={closeEditModal} values={values} setValues={setValues} handleChange={handleChang} handleSubmit={handlSubmit} /> */}
+              <EditModalP isOpen={openEditModal} onClose={closeEditModal} values={admin} setValues={setAdmin} handleChange={handleChange} handleSubmit={handleSubmit} />
             </>
         )}
         </div>

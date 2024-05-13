@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ConfirmSuccess from '../ConfirmSuccess';
@@ -91,7 +90,7 @@ const AddProductMod = ({ show, handleClose }) => {
                 <h5 className="modal-title">Add product</h5>
             </div>
             <div className="modal-body bg-light">
-              <form onSubmit={handleSubmit}>
+              <form >
                 <div className="form-group">
                   <label htmlFor="name"><b>Name:</b></label>
                   <input type="text" className="form-control rounded-pill" placeholder='Write the product name' name="name" id="name" value={product.name} onChange={handleChange} />
@@ -132,7 +131,7 @@ const AddProductMod = ({ show, handleClose }) => {
                 </div>
                 <div class="d-flex justify-content-end gap-2 mt-4">
                   <button className='btn text-primary  rounded-pill' onClick={handleClose}>Cancel</button>
-                  <button type="submit" className='btn btn-primary rounded-pill' >Update</button>
+                  <button type="button" onClick={handleSubmit} className='btn btn-primary rounded-pill' >Update</button>
                 </div>
               </form>
             </div>

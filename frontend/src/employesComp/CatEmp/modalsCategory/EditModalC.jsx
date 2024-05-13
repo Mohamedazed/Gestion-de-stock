@@ -20,9 +20,6 @@ const EditModalC = ({ isOpen, onClose, values, handleChange, handleSubmit }) => 
         <div className="modal-content">
           <div className="modal-header bg-warning-subtle">
             <h4 className="modal-title">Edit Category</h4>
-            {/* <button type="button" className="close bg-danger text-light ps-2 pe-2 rounded pt-1" data-dismiss="modal" aria-label="Close" onClick={onClose}>
-              <span aria-hidden="true">&times;</span>
-            </button> */}
           </div>
           <div className="modal-body">
             <form onSubmit={handleSubmit}>

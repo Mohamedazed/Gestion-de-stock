@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ShowSuppModal from './ModalsSupp/ShowSuppModal';
 import EditSuppModal from './ModalsSupp/EditSuppModal';
@@ -20,6 +20,7 @@ export default function Suppliers() {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isModalOpen, setModalOpen] = useState(false);
+  const navigate = useNavigate()
 
   useEffect(() => {
     Count();
@@ -41,14 +42,6 @@ export default function Suppliers() {
       .catch(err => console.log(err));
   }
 
-  // const handleDelete = async (id) => {
-  //   try {
-  //     await axios.delete(`http://localhost:8081/suppliers/delete/${id}`);
-  //     setData(prevData => prevData.filter(s => s.id !== id));
-  //   } catch (error) {
-  //     console.error('Error deleting supplier:', error);
-  //   }
-  // };
   const handleDelete = async (id) => {
     setSelectedSupplier(id);
     setModalOpen(true);
@@ -58,6 +51,7 @@ export default function Suppliers() {
     try {
       await axios.delete(`http://localhost:8081/suppliers/delete/${selectedSupplier}`);
       setData(prevData => prevData.filter(prod => prod.id !== selectedSupplier));
+      navigate('/home')
     } catch (error) {
       console.error('Error deleting supplier:', error);
     } finally {
@@ -188,7 +182,7 @@ export default function Suppliers() {
           </tbody>
         </table>
 
-        <div className="border border-warning p-2 bg-light mb-5 pb-0">
+        <div className="border border-warning p-2 bg-light mb-5 pb-0" style={{ overflowX: 'auto' }}>
         <div className="d-flex justify-content-between">
         <div style={{ display: 'inline-flex', alignItems: 'center' }}>
           <p style={{ marginRight: '10px' }}>Show</p>
@@ -199,7 +193,7 @@ export default function Suppliers() {
           <p>Total : {Total} Supplier</p>
         </div>
         </div>
-        <table className="table table-striped table-hover border text-center">
+        <table className="table table-striped table-hover border text-center" >
           <thead>
             <tr>
               <th className='bg-warning-subtle'>Code</th>
@@ -218,7 +212,7 @@ export default function Suppliers() {
                 data.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((supplier, index) => (
                   <tr key={index}>
                     <td className='bg-warning-subtle'>{supplier.Code_Supplier}</td>
-                    <td><img src={`http://localhost:8081/${supplier.image}`} alt="supplier" width='150px' height='100px'/></td>
+                    <td><img src={`http://localhost:8081/${supplier.image}`} alt="supplier" className='rounded-5 shadow-sm' width='150px' height='100px'/></td>
                     <td>{supplier.Name}</td>
                     <td>{supplier.Phone}</td>
                     <td>{supplier.Email}</td>

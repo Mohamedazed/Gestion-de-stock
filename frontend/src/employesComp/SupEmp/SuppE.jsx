@@ -16,7 +16,6 @@ export default function SuppE() {
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [isShowModalOpen, setShowModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
-  // const [supplier,setSupplier] = useState(null)
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -156,8 +155,6 @@ export default function SuppE() {
         console.error(err);
       });
   }, [selectedSupplier]);
-  
-  // console.log(data)
 
   const handleChang = (e) => {
     const { name, value } = e.target;
@@ -279,8 +276,6 @@ export default function SuppE() {
               <th className='bg-warning-subtle'>Name</th>
               <th className='bg-warning-subtle'>Phone</th>
               <th className='bg-warning-subtle'>Email</th>
-              {/* <th className='bg-warning-subtle'>Address</th> */}
-              {/* <th className='bg-warning-subtle'>Company</th> */}
               <th className='bg-warning-subtle'>Action</th>
             </tr>
           </thead>
@@ -289,13 +284,11 @@ export default function SuppE() {
               Array.isArray(data) && data.length > 0 ? (
                 data.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((supplier, index) => (
                   <tr key={index}>
-                    <td className='bg-warning-subtle'>{supplier.Code_Supplier}</td>
-                    <td>{supplier.image?<img src={`http://localhost:8081/${supplier.image}`} alt="supplier" width='90px' height='90px' className='rounded-pill' style={{backgroundSize: 'cover'}}/>: <img width='90px' height='90px' src='/public/noImg.png' className='rounded-pill' style={{backgroundSize: 'cover'}}/>}</td>
+                    <td>{supplier.Code_Supplier}</td>
+                    <td>{supplier.image?<img src={`http://localhost:8081/${supplier.image}`} alt="supplier" width='90px' height='90px' className='rounded-4' style={{backgroundSize: 'cover'}}/>: <img width='90px' height='90px' src='/public/noImg.png' className='rounded-pill' style={{backgroundSize: 'cover'}}/>}</td>
                     <td>{supplier.Name}</td>
                     <td>{supplier.Phone}</td>
                     <td>{supplier.Email}</td>
-                    {/* <td>{supplier.Adresse}</td> */}
-                    {/* <td>{supplier.Company}</td> */}
                     <td>
                       {/* Updated buttons */}
                       <button onClick={() => openShowModal(supplier)} className='btn btn-outline-info rounded-circle m-1'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-list" viewBox="0 0 16 16"><path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/></svg></button>

@@ -1,9 +1,6 @@
-
 #body {
   margin: 0;
   padding: 0;
-  /* background: url('/public/bgstock.jpg') no-repeat center center fixed;
-  background-size: cover; */
   height: 100vh;
   overflow: hidden;
 }
@@ -100,7 +97,6 @@
 
 .dashboard-container {
   display: flex;
-  /* max-width: 100%; */
 }
 
 .main-content {

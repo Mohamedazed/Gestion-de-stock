@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios';
+import ConfirmModal from '../categories/ConfirmModal';
+import ConfirmSModal from './ConfirmSModal';
 
 export default function Sales() {
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const [product,setproduct] = useState(null)
   const [Total, setTotal] = useState(0)
-
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -18,23 +19,59 @@ export default function Sales() {
     Count();
   }, [currentPage, searchTerm]);
  
+  // const fetchData = async () => {
+  //   try {
+  //     const queryParams = {
+  //       name: searchTerm
+  //     };
+  //       const response = await axios.get('http://localhost:8081/sale', { params: queryParams })
+  //       const products = response.data.result;
+  //       const updatedData = await Promise.all(products.map(async (prod) => {
+          
+  //         return { ...prod };
+  //       }));
+  //       setData(updatedData);
+  //       setTotalPages(Math.ceil(response.data.result.length / pageSize));
+  //     } catch (error) {
+  //       console.error('Error fetching sales:', error);
+  //     }
+  //   };
   const fetchData = async () => {
     try {
       const queryParams = {
         name: searchTerm
       };
-        const response = await axios.get('http://localhost:8081/sale', { params: queryParams })
-        const products = response.data.result;
-        const updatedData = await Promise.all(products.map(async (prod) => {
-          
-          return { ...prod };
-        }));
-        setData(updatedData);
-        setTotalPages(Math.ceil(response.data.result.length / pageSize));
-      } catch (error) {
-        console.error('Error fetching sales:', error);
-      }
-    };
+      const response = await axios.get('http://localhost:8081/sale', { params: queryParams });
+      let sales = response.data.result;
+  
+      // Sort the sales based on the sale date in descending order
+      sales.sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date));
+  
+      const updatedData = await Promise.all(sales.map(async (sale) => {
+        return { ...sale };
+      }));
+      setData(updatedData);
+      setTotalPages(Math.ceil(response.data.result.length / pageSize));
+    } catch (error) {
+      console.error('Error fetching sales:', error);
+    }
+  };
+
+  const handlDelete = async (id) => {
+    setSelectedCategory(id);
+    setModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:8081/sale/delete/${selectedCategory}`);
+      setData(prevData => prevData.filter(prod => prod.id !== selectedCategory));
+    } catch (error) {
+      console.error('Error deleting cat:', error);
+    } finally {
+      setModalOpen(false);
+    }
+  };
 
   const handleSearch = async () => {
     setCurrentPage(1);
@@ -90,7 +127,7 @@ export default function Sales() {
                     / <span style={{ color: 'gray' }}>Sales</span>
                 </p>
       </div>
-      
+      <ConfirmSModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} onConfirm={handleConfirmDelete} />
       <div>
       <table className='table border'>
           <thead >
@@ -119,7 +156,7 @@ export default function Sales() {
           </tbody>
         </table>
 
-        <div className="border p-2 bg-light mb-5 pb-0">
+        <div className="border p-2 bg-light mb-5 pb-0" style={{ overflowX: 'auto' }}>
         <div className="d-flex justify-content-between">
         <div style={{ display: 'inline-flex', alignItems: 'center' }}>
           <p style={{ marginRight: '10px' }}>Show</p>
@@ -139,6 +176,7 @@ export default function Sales() {
               <th className='bg-warning-subtle'>Quantité</th>
               <th className='bg-warning-subtle'>Total Prix</th>
               <th className='bg-warning-subtle'>Date d'achat</th>
+              <th className='bg-warning-subtle'>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -151,6 +189,10 @@ export default function Sales() {
                   <td className='p-3'>{prod.quantity}</td>
                   <td className='p-3'>{prod.total_price}DH</td>
                   <td className='p-3'>{formatDate(prod.sale_date)}</td>
+                  <td className='p-3'>
+                    <button className="btn bg-danger-subtle btns shadow rounded-pill" onClick={() => handlDelete(prod.id)}>Delete <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" /><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" /></svg>
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (

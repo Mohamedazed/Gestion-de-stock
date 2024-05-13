@@ -55,30 +55,7 @@ export default function Login() {
         
     }
   };
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-  
-  //   if (!validateForm()) {
-  //     const emailValue = email.current.value;
-  //     const passwordValue = password.current.value;
-  
-  //     axios.post('http://localhost:8081/login', {
-  //       email: emailValue,
-  //       password: passwordValue,
-  //     }, { withCredentials: true })
-  //     .then(result => {
-  //       if (result.data.loginStatus) {
-  //         localStorage.setItem("valid", true);
-  //         navigate('/home'); // Navigate to /home instead of /
-  //       } else {
-  //         alert(result.data.Error);
-  //       }
-  //     })
-  //     .catch(err => console.log(err)); // Use catch to handle errors
-  //   }
-  // };
 
-  
   const goToSignUp = () => {
     navigate('/signup'); 
   };

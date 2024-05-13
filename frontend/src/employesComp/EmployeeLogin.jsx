@@ -48,10 +48,7 @@ export default function EmployeeLogin() {
       if(res.data.loginStatus) {console.log(res)
         localStorage.setItem("valid", true)
         navigate('/employe/empHome')
-        // .then(res => {
-        //   if (res.data.status === "Success") {
-        //     navigate('/employe/empHome', { state: { name: res.data.name } });
-          } else {
+        } else {
             alert(res.data.error)
           }
         })

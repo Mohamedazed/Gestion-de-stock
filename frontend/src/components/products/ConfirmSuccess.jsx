@@ -1,4 +1,3 @@
-
 import { Button, Modal, Typography } from 'keep-react';
 
 const ConfirmSuccess = ({ isOpen, onClose }) => {
@@ -14,16 +13,14 @@ const ConfirmSuccess = ({ isOpen, onClose }) => {
             <Typography variant="h3" className="text-body-1 font-medium text-metal-900">
             Creation Confirm
             </Typography>
-            <Typography variant="p" className="text-body-4 font-normal text-metal-600">
+            <Typography variant="p" className="text-body-4 font-normal text-metal-600 text-secondary">
               Product is created successfully!
             </Typography>
           </Typography>
         </Modal.Content>
-        <Modal.Footer className="modal-footer">
-          <Button onClick={onClose} size="sm" color="success" className='btn btn-success rounded-pill'>
+          <Button onClick={onClose} size="sm" color="success" className='btn btn-success rounded-pill shadow'>
             Confirm
           </Button>
-        </Modal.Footer>
       </Modal.Body>
     </Modal>
   );

@@ -22,8 +22,6 @@ const CatE = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-
-//   const [values, setValues] = useState({ name: '', created_date: '' });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -250,7 +248,7 @@ const CatE = () => {
             {data.length > 0 ? (
               data.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((cat, index) => (
                 <tr key={index} >
-                  <td className='bg-warning-subtle'>{cat.id}</td>
+                  <td>{cat.id}</td>
                   <td>{cat.name}</td>
                   <td>{formatDate(cat.created_date)}</td>
                   <td>

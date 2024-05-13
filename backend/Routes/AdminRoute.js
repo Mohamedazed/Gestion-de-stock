@@ -211,6 +211,26 @@ router.get('/categories/search', (req, res) => {
     });
 });
 
+router.get("/products-by-category/:categoryName", (req, res) => {
+    const { categoryName } = req.params;
+    const sql = `
+        SELECT p.*, c.name AS category_name 
+        FROM products AS p
+        INNER JOIN categories AS c ON p.Categorie = c.name
+        WHERE c.name = ?`;
+    
+    db.query(sql, [categoryName], (err, result) => {
+        if (err) {
+            console.error("Error executing SQL query:", err);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+        
+        return res.json({ result });
+    });
+});
+
+
+
 ///////////////products
 router.get('/products', (req, res) => {
     const sql = "SELECT * FROM products";
@@ -543,12 +563,17 @@ router.get('/suppliers/search', (req, res) => {
 });
 /////////////////Employees
 router.get("/employes", (req, res) => {
-    const sql = "SELECT * FROM Employes";
+    const sql = `
+        SELECT e.*, t.name AS type_name 
+        FROM employes AS e
+        INNER JOIN types AS t ON e.type_id = t.id`;
+    
     db.query(sql, (err, result) => {
         if (err) return res.json({ Message: "Error inside server" });
         return res.json({ result });
     });
 });
+
 
 router.get('/employee_count', (req, res) => {
     const sql = "select count(Code_Employee) as employee from Employes";
@@ -662,6 +687,20 @@ router.get('/employees/types', (req, res) => {
     });
 });
 
+router.get("/types/:id", (req, res) => {
+    const typeId = req.params.id;
+    const sql = "SELECT name FROM types WHERE id = ?";
+    
+    db.query(sql, [typeId], (err, result) => {
+        if (err) return res.json({ Message: "Error inside server" });
+        if (result.length === 0) {
+            return res.json({ Message: "Type not found" });
+        }
+        const typeName = result[0].name;
+        return res.json({ type_name: typeName });
+    });
+});
+
 router.delete('/types/delete/:id', (req, res) => {
     const sql = "DELETE FROM types WHERE id = ?";
     const id = req.params.id;
@@ -728,6 +767,21 @@ router.get('/types_count', (req, res) => {
         return res.json({Status: true, Result: result})
     })
 })
+
+router.get('/employees/by-type/:typeId', (req, res) => {
+    const typeId = req.params.typeId;
+    const query = `
+        SELECT * FROM employes WHERE type_id = ?;
+    `;
+    db.query(query, [typeId], (err, results) => {
+        if (err) {
+            console.error('Error fetching employees by type:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        } else {
+            res.json({ employees: results });
+        }
+    });
+});
 //////////////carts
 
 router.get('/cart', (req, res) => {
@@ -862,6 +916,16 @@ router.get('/sales_count', (req, res) => {
         return res.json({Status: true, Result: result})
     })
 })
+
+router.delete('/sale/delete/:id', (req, res) => {
+    const sql = "DELETE FROM sales WHERE id = ?";
+    const id = req.params.id;
+    db.query(sql, [id], (err, result) => {
+        if(err) return res.json({ Message: "Error inside server" });
+        return res.json({ result });
+    });
+});
+
 router.get('/top_selling_products/:selectedMonth', (req, res) => {
     const selectedMonth = req.params.selectedMonth;
     const sql = `

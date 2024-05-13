@@ -76,10 +76,10 @@ export default function ProdE() {
   const fetchSupplierName = async (Code_Supplier) => {
     try {
       const response = await axios.get(`http://localhost:8081/suppliers/show/${Code_Supplier}`);
-      return response.data.result[0].Name; // Assuming the API returns a single supplier
+      return response.data.result[0].Name; 
     } catch (error) {
       console.error('Error fetching supplier name:', error);
-      return 'Supplier Not Found'; // Default value if supplier name is not found
+      return 'Supplier Not Found'; 
     }
   };
 
@@ -260,8 +260,8 @@ const formatNumber = (value) => {
       </div>
 
       <div className="row bg-white border border-warning shadow-sm rounded-5 p-3 m-3 bg-light" >
-        {visibleProducts.map((prod) => (
-          <div className="col-md-4 mb-3" key={prod.Code_Product}>
+      {visibleProducts.map((prod) => (
+          <div className="col-md-6 mb-3" key={prod.Code_Product}>
              <div className="card shadow-sm rounded-5 border border-warning-subtle">
               
         <div style={{ position: 'relative' }}>
@@ -281,7 +281,7 @@ const formatNumber = (value) => {
               textAlign: 'left',
             }}
           >
-            <small className="card-text bg-dark rounded-pill w-25 text-center pe-1 ps-1" style={{ color: 'gold', margin: 0 }}>
+            <small className="card-text bg-dark rounded-pill w-25 text-center pe-1 ps-1" style={{ color: 'gold', margin: 0  , textDecoration: prod.Quantite === 0 ? 'line-through' : 'none' }}>
               {formatNumber(prod.prix_sale)} DH
             </small>
           </div>
@@ -300,9 +300,15 @@ const formatNumber = (value) => {
                   <p className="text-secondary">From {prod.supplierName}</p>
                   <p className="text-secondary" style={{marginTop: '-18px'}}>Category of {prod.Categorie}.</p>
                  <div className="">
-                  <button onClick={() => openShowModal(prod)} className="btn btn-info rounded-4 m-1">
-                    Sale <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16"><path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z"/><path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>
-                  </button>
+                  {prod.Quantite > 0 ? ( // Check if quantity is greater than 0
+                    <button onClick={() => openShowModal(prod)} className="btn btn-info rounded-4 m-1">
+                      Sale <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16"><path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z"/><path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>
+                    </button>
+                  ) : (
+                    <button className="btn btn-warning rounded-4 m-1" disabled>
+                      Sold Out <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-x" viewBox="0 0 16 16"><path d="M7.354 5.646a.5.5 0 1 0-.708.708L7.793 7.5 6.646 8.646a.5.5 0 1 0 .708.708L8.5 8.207l1.146 1.147a.5.5 0 0 0 .708-.708L9.207 7.5l1.147-1.146a.5.5 0 0 0-.708-.708L8.5 6.793z"/><path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>
+                    </button>
+                  )}
                   <button onClick={() => openEditModal(prod)} className="btn btn-primary rounded-4 m-1">
                      Edit <svg
                       xmlns="http://www.w3.org/2000/svg"

@@ -44,30 +44,6 @@ export default function SignupEmployee() {
     return Object.keys(newErrors).length > 0;
   };
 
-  // const handleSignUp = async (e) => {
-  //   e.preventDefault();
-
-  //   if (!validateForm()) {
-  //     const nameValue = name.current.value;
-  //     const emailValue = email.current.value;
-  //     const passwordValue = password.current.value;
-
-  //     axios.post('http://localhost:8081/employee/signupEmployee', {
-  //       name: nameValue,
-  //       email: emailValue,
-  //       password: passwordValue,
-  //     })
-  //       .then(res => {
-  //         if (res.data.Status === "Success") {
-  //           navigate('/employee_login');
-  //         } else {
-  //           alert('Error');
-  //         }
-  //       })
-  //       .catch(err => console.log(err));
-  //   }
-  // };
-
   const handleSignUp = async (e) => {
     e.preventDefault();
   

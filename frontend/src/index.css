@@ -34,7 +34,7 @@ input[type='number']::-webkit-outer-spin-button {
 
 .pagination .page-link {
     color: #ae8b41;
-    background-color: white; /* Set background color to white */
+    background-color: white; 
     border-color: #ae8b41;
   }
   
@@ -54,7 +54,6 @@ input[type='number']::-webkit-outer-spin-button {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    /* object-fit: cover; */
   }
 
 
@@ -71,12 +70,10 @@ input[type='number']::-webkit-outer-spin-button {
   cursor: pointer;
   border-radius: 25px;
   border: none;
-  /* background: rgb(239, 206, 129); */
   background: url(boxB.jpg);
   background-size: cover;
   font-weight: 600;
   left: -20px;
-  /* text-transform: uppercase; */
   letter-spacing: 0.5px;
   width: 20px;
   box-shadow: 4px 0px 4px 0px  #ecbf6d;
@@ -137,3 +134,68 @@ input[type='number']::-webkit-outer-spin-button {
     width: 100%;
   }
 }
+
+.btns{
+  position: relative;
+  /* margin: 25px;
+  padding: 10px; */
+  color: #000000;
+  text-align: center;
+  transition: 0.5s;
+  border: none;
+  /* background: rgb(255, 255, 255); */
+  /* font-weight: 600; */
+  left: -20px;
+  /* letter-spacing: 0.5px;
+  width: 20px; */
+  box-shadow: 0px 0px 10px 0px  #f7ecc6;
+  
+}
+.btns:hover{
+  left: 0;
+  color: #fff;
+  width: 150px;
+  box-shadow: 4px 0px 4px 0px  #b58412;
+  
+}
+.btns:focus{
+  outline: none;
+}
+
+.navbar-brand {
+  position: relative;
+  color: #ffeebc;
+  text-align: center;
+  transition: 0.5s;
+}
+
+.navbar-brand::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background-color: #fff;
+  transition: width 0.3s ease;
+}
+
+.navbar-brand:hover::after,
+.navbar-brand:focus::after {
+  width: 100%;
+}
+
+.navbar-brand:focus {
+  outline: none;
+}
+
+.navbar-brand.active::after {
+  width: 100%;
+}
+
+.b:hover{
+  background-color: orange !important; 
+}
+
+

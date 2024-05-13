@@ -19,9 +19,6 @@ export default function EditTypeModal({ isOpen, onClose, values, handleChange, h
           <div className="modal-content">
             <div className="modal-header bg-warning-subtle">
               <h5 className="modal-title">Edit Type</h5>
-              {/* <button type="button" className="close bg-danger text-light ps-2 pe-2 rounded pt-1" data-dismiss="modal" aria-label="Close" onClick={onClose}>
-                <span aria-hidden="true">&times;</span>
-              </button> */}
             </div>
             <div className="modal-body">
               <form onSubmit={handleSubmit}>

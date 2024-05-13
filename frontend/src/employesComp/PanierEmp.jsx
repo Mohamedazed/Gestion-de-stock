@@ -1,15 +1,14 @@
-// PanierEmp.jsx
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Receipt from '../components/sales/Receipt';
+import Calendar from 'react-calendar';
 
 export default function PanierEmp() {
     const [cartItems, setCartItems] = useState([]);
     const [showReceiptModal, setShowReceiptModal] = useState(false);
     const [refreshPanier, setRefreshPanier] = useState(false);
     const [confirmed, setConfirmed] = useState(false);
-    const navigate = useNavigate();
   
     useEffect(() => {
       fetchCartItems();
@@ -36,8 +35,7 @@ export default function PanierEmp() {
     const handleConfirm = () => {
       axios.post('http://localhost:8081/sales', cartItems)
         .then(response => {
-          console.log('Products confirmed:', response.data);
-          // fetchCartItems(); 
+          console.log('Products confirmed:', response.data); 
           setConfirmed(true); 
           setShowReceiptModal(true);
         })
@@ -52,7 +50,7 @@ export default function PanierEmp() {
     };
   
     return (
-      <aside className="aside-section me-5 mt-5">
+      <aside className="aside-section me-4 mt-5">
         <div className='container ' >
           <div className='row mb-4'>
             <div className='border shadow p-3 rounded-5 border border-warning'>
@@ -104,6 +102,10 @@ export default function PanierEmp() {
   
               </div>
             </div>
+
+            <div className="mt-4 border p-4 me-5 ps-5 rounded-5 border-warning shadow ">
+            <Calendar className='ms-4 border-warning shadow-sm rounded-5 '/>
+          </div>
           </div>
         </div>
       </aside>
