@@ -58,7 +58,7 @@ export default function EditEmp() {
     formData.append('salary', employee.salary);
     formData.append('type_id', employee.type_id);
     formData.append('image', employee.image);
-
+    console.log(employee.type_id)
     axios.put(`http://localhost:8081/employes/edit/${id}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data'

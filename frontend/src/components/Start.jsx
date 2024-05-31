@@ -31,7 +31,7 @@ const Start = () => {
           <div className="w-75 text-warning mt-5 ms-2" style={{ maxWidth: '600px' }}>
             <div className="d-flex justify-content-center">
               <img src='/public/logoSM2.png' className="mt-2" width='100px' height='90px' style={{marginLeft: '-15%'}}/>
-              <h1 className="mt-1 ms-2" >Stock <br/>Management</h1>
+              <h1 className="mt-1 ms-2" style={{textShadow: '1px 1px 2px black'}}>Stock <br/>Management</h1>
             </div>
             <div style={{ overflowX: 'auto' }} className="me-5">
               <p className="text-dark mt-3 me-5">

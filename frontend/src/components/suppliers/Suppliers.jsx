@@ -182,7 +182,7 @@ export default function Suppliers() {
           </tbody>
         </table>
 
-        <div className="border border-warning p-2 bg-light mb-5 pb-0" style={{ overflowX: 'auto' }}>
+        <div className="border border-warning p-2 bg-light mb-2 pb-0" style={{ overflowX: 'auto' }}>
         <div className="d-flex justify-content-between">
         <div style={{ display: 'inline-flex', alignItems: 'center' }}>
           <p style={{ marginRight: '10px' }}>Show</p>
@@ -212,7 +212,7 @@ export default function Suppliers() {
                 data.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((supplier, index) => (
                   <tr key={index}>
                     <td className='bg-warning-subtle'>{supplier.Code_Supplier}</td>
-                    <td><img src={`http://localhost:8081/${supplier.image}`} alt="supplier" className='rounded-5 shadow-sm' width='150px' height='100px'/></td>
+                    <td><img src={`http://localhost:8081/${supplier.image}`} alt="supplier" className='rounded-5 shadow-sm' width='100px' height='70px'/></td>
                     <td>{supplier.Name}</td>
                     <td>{supplier.Phone}</td>
                     <td>{supplier.Email}</td>

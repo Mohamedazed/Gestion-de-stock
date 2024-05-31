@@ -14,7 +14,11 @@ const Navb = () => {
     <nav className='navbar navbar-expand-lg navbar-light bg-white-subtle rounded-5 shadow-sm ms-5 me-3' style={{marginTop: '-70px'}}>
       <div className='container'>
         <Link to='/' className='navbar-brand d-flex' >
-          <img src='/public/logoSM2.png' width='40px'/><b className='ms-2 d-lg-block text-dark d-none'>Aizen Stock Management</b>
+          <img src='/public/logoSM2.png' width='55px' height='52px' style={{marginRight: '-20px'}}/>
+          <div className='ms-2 d-lg-block text-warning-subtle  d-none'>
+            <div className='me-5' style={{marginTop: '-9px', textShadow: '1px 1px 1px black'}}><small>Aizen</small> </div>
+            <div className='me-5' style={{marginTop:'-11px',marginBottom: '-12px',textShadow: '1px 1px 1px black'}}><small >Stock</small></div>
+            <div className='ms-4' style={{textShadow: '1px 1px 1px black'}}><small > Management</small></div></div>
         </Link>
         <button
           className='navbar-toggler'

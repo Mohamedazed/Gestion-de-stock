@@ -101,7 +101,7 @@ router.get('/logout', (req, res) => {
 // Profile routes
 router.get('/profile/name/:name', (req, res) => {
     const name = req.params.name;
-    const sql = "SELECT id, image FROM login WHERE name = ?";
+    const sql = "SELECT id, image, email FROM login WHERE name = ?";
     db.query(sql, [name], (err, result) => {
         if (err) {
             console.error('Error querying the database:', err);
@@ -113,9 +113,11 @@ router.get('/profile/name/:name', (req, res) => {
         const user = result[0];
         const userId = user.id;
         const image = user.image;
-        return res.json({ Status: true, UserId: userId, Image: image });
+        const email = user.email;
+        return res.json({ Status: true, UserId: userId, Image: image, Email: email });
     });
 });
+
 
 router.get('/profile/id/:id', (req, res) => {
     const id = req.params.id;
@@ -619,7 +621,7 @@ router.put('/employes/edit/:id', uploadImage.single('image'), (req, res) => {
     const { Name, Email, Phone, Adresse, salary, type_id } = req.body;
     let image = req.file ? req.file.path : null;
     const sql = `UPDATE employes 
-        set Name = ?, Email = ?, Phone= ? , salary = ?, Adresse = ?, type_id = ? ,image = ?
+        set Name = ?, Email = ?, Phone= ? , Adresse = ?, salary = ?, type_id = ? ,image = ?
         Where Code_Employee = ?`
         const values = [Name, Email, Phone, Adresse, salary, type_id, image, id];
     db.query(sql,values, (err, result) => {

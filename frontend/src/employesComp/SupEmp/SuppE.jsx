@@ -232,9 +232,9 @@ export default function SuppE() {
       <div className='bg-white p-2 rounded-5 border border-warning shadow-sm'>
               <div className='d-flex justify-content-between align-items-center m-2'>
                 <h4>List of Suppliers</h4>
-                <button onClick={handleAddSupp} className="btn btn-warning shadow rounded-pill">
+                {/* <button onClick={handleAddSupp} className="btn btn-warning shadow rounded-pill">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/></svg>  New supplier
-                    </button>
+                    </button> */}
                   </div>
                   <div>
             <div className='rounded-pill p-3 border bg-warning-subtle'>
@@ -256,7 +256,7 @@ export default function SuppE() {
         </div>
         </div>
 
-        <div className="border border-warning p-2 bg-white mb-5 pb-0 rounded-5 px-3">
+        <div className="border border-warning p-2 bg-white mb-2 pb-0 rounded-5 px-3">
         <div className="d-flex justify-content-between">
         <div style={{ display: 'inline-flex', alignItems: 'center' }}>
           <p style={{ marginRight: '10px' }}>Show</p>
@@ -292,12 +292,12 @@ export default function SuppE() {
                     <td>
                       {/* Updated buttons */}
                       <button onClick={() => openShowModal(supplier)} className='btn btn-outline-info rounded-circle m-1'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-list" viewBox="0 0 16 16"><path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/></svg></button>
-                      <button onClick={() => openEditModal(supplier)} className='btn btn-outline-primary rounded-circle m-1'>
+                      {/* <button onClick={() => openEditModal(supplier)} className='btn btn-outline-primary rounded-circle m-1'>
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" /></svg>
                       </button>
                       <button onClick={() => handleDelete(supplier.Code_Supplier)} className="btn btn-outline-danger rounded-circle m-1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg>
-                      </button>
+                      </button> */}
                     </td>
                   </tr>
                 ))

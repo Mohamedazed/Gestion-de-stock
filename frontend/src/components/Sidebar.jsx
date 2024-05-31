@@ -47,6 +47,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const [name, setName] = useState(null);
   const [image, setImage] = useState(null)
+  const [email, setEmail] = useState(null);
   const [id, setId] = useState(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -85,6 +86,7 @@ const Sidebar = () => {
         .then((res) => {
           setId(res.data.UserId);
           setImage(res.data.Image);
+          setEmail(res.data.Email);
         })
         .catch((err) => console.log(err));
     }
@@ -141,7 +143,9 @@ const Sidebar = () => {
                     <img src={`http://localhost:8081/uploads/${image}`} alt='Profile' className='profile-link-image' />
                   </a>
                   <ul class="dropdown-menu mt-3">
-                    <li><Link className="dropdown-item" to={`/profile/${id}`}>
+                    <li className='ms-3'>{name}</li>
+                    <li className='ms-3 text-secondary' style={{marginBottom:'-10px'}}>{email}</li>
+                    <li><hr/><Link className="dropdown-item" to={`/profile/${id}`}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" className="mb-1 bi bi-person-fill" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/></svg>  Profile </Link></li>
                     <li><button className="dropdown-item" href="/logout" onClick={handleDelete}><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" className="mb-1 bi bi-box-arrow-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/><path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/></svg> Logout</button></li>
                   </ul>
@@ -173,7 +177,7 @@ const Sidebar = () => {
                 <Link to='/home' className='nav-logo'>
                 <img src='/public/logoSM2.png' width='30px' style={{marginLeft: '-5px'}}/>
                   {/* <i className={`fas fa-home-alt nav-logo-icon`}></i> */}
-                  <sapn className='nav-logo-name me-1' style={{ fontFamily:'spanrush Script MT'}}><b>Aizen Stock</b></sapn>
+                  <sapn className='nav-logo-name me-2' style={{ fontFamily:'spanrush Script MT'}}><b>Aizen Stock</b></sapn>
                 </Link>
 
                 <div className='nav-list'>
